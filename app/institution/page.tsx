@@ -8,8 +8,6 @@ import {
   ArrowRightIcon,
 } from "@/components/admin/Icons";
 
-export const dynamic = "force-dynamic";
-
 export const metadata = {
   title: "Institution Portal | AICTE SAKSHAM",
   description: "Submit new applications, track Extension of Approval (EoA), deficiency replies, and compliance affirmations",

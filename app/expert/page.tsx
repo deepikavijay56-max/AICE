@@ -7,8 +7,6 @@ import { getComplianceMonitoringData } from "@/lib/complianceEngine";
 import { ArrowRightIcon } from "@/components/admin/Icons";
 import { PageHeader } from "@/components/ui/PageHeader";
 
-export const dynamic = "force-dynamic";
-
 export const metadata = {
   title: "EVC Expert Panel Dashboard | AICTE SAKSHAM",
   description: "Assigned peer review inspection schedules and report lodgement",

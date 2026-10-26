@@ -7,8 +7,6 @@ import { createServerClient } from "@/lib/supabase/server";
 import { ArrowRightIcon } from "@/components/admin/Icons";
 import { PageHeader } from "@/components/ui/PageHeader";
 
-export const dynamic = "force-dynamic";
-
 export const metadata = {
   title: "Scrutiny Officer Worklist | AICTE SAKSHAM",
   description: "Document checklist verification, deficiency issuance, and scrutiny progression",

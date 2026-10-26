@@ -15,8 +15,6 @@ import {
   ExternalLinkIcon,
 } from "@/components/admin/Icons";
 
-export const dynamic = "force-dynamic";
-
 async function DashboardOverviewContent() {
   const stats = await fetchAdminDashboardStats();
 
