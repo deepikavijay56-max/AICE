@@ -106,6 +106,7 @@ export interface QueryDocument {
   checksum_sha256: string;
   is_verified: boolean;
   verified_at: string | null;
+  metadata?: Record<string, unknown>;
   created_at: string;
 }
 

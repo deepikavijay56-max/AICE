@@ -4,7 +4,7 @@ import { getCurrentUserContext } from "@/lib/authContext";
 import { AccessDeniedView } from "@/components/auth/AccessDeniedView";
 import { RoleDashboardShell } from "@/components/navigation/RoleDashboardShell";
 import { getApplicationDetail } from "@/lib/applicationDetail";
-import { ApplicationDetailView } from "@/components/admin/ApplicationDetailView";
+import { ScrutinyReviewPanel } from "./ScrutinyReviewPanel";
 
 interface ScrutinyApplicationDetailPageProps {
   params: Promise<{ id: string }>;
@@ -13,8 +13,8 @@ interface ScrutinyApplicationDetailPageProps {
 export async function generateMetadata({ params }: ScrutinyApplicationDetailPageProps) {
   const { id } = await params;
   return {
-    title: `Scrutiny Review: ${id} | AICTE SAKSHAM`,
-    description: `Statutory document checklist, scrutiny deficiency tracking, and flight recorder for ${id}`,
+    title: `Scrutiny Checklist Review: ${id} | AICTE SAKSHAM`,
+    description: `Statutory document checklist, scrutiny deficiency issuance, and case clearance for ${id}`,
   };
 }
 
@@ -49,12 +49,9 @@ async function ScrutinyDetailLoader({ params }: { params: Promise<{ id: string }
       userRole={user?.role || "scrutiny_officer"}
       fullName={user?.fullName || "Scrutiny Officer"}
     >
-      <ApplicationDetailView
+      <ScrutinyReviewPanel
         application={data.application}
-        flightRecorder={data.flightRecorder}
         isDemo={data.isDemo}
-        listHref="/scrutiny"
-        listTitle="Scrutiny Worklist"
       />
     </RoleDashboardShell>
   );

@@ -453,6 +453,7 @@ export async function getApplicationDetail(id: string): Promise<DetailedApplicat
         checksum_sha256,
         is_verified,
         verified_at,
+        metadata,
         created_at
       `)
       .eq("application_id", id)
