@@ -10,7 +10,11 @@ export const metadata = {
   description: "Initiate new Extension of Approval (EoA) or Program addition application with secure document uploads",
 };
 
-export default function NewApplicationPage() {
+interface NewApplicationPageProps {
+  searchParams: Promise<{ draftId?: string }>;
+}
+
+export default function NewApplicationPage({ searchParams }: NewApplicationPageProps) {
   return (
     <Suspense
       fallback={
@@ -20,12 +24,13 @@ export default function NewApplicationPage() {
         </div>
       }
     >
-      <NewApplicationLoader />
+      <NewApplicationLoader searchParams={searchParams} />
     </Suspense>
   );
 }
 
-async function NewApplicationLoader() {
+async function NewApplicationLoader({ searchParams }: { searchParams: Promise<{ draftId?: string }> }) {
+  const { draftId } = await searchParams;
   const user = await getCurrentUserContext();
 
   if (
@@ -104,6 +109,13 @@ async function NewApplicationLoader() {
     // Non-blocking
   }
 
+  // If draftId is present, fetch the existing draft application and its uploaded documents
+  let initialDraft = null;
+  if (draftId) {
+    const { getApplicationDraft } = await import("../../actions");
+    initialDraft = await getApplicationDraft(draftId);
+  }
+
   const profileData = {
     id: user?.userId || "demo-user-id",
     fullName: user?.fullName || "Institution Registrar",
@@ -124,7 +136,7 @@ async function NewApplicationLoader() {
       userRole={user?.role || "institution_admin"}
       fullName={user?.fullName || "Institution Registrar"}
     >
-      <NewApplicationWizard profile={profileData} />
+      <NewApplicationWizard profile={profileData} initialDraft={initialDraft} />
     </RoleDashboardShell>
   );
 }

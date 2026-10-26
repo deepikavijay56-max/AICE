@@ -31,15 +31,15 @@ export function ExplainableAlertsSection() {
   });
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5 space-y-4">
+    <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs p-5 space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-100 pb-3">
         <div>
           <div className="flex items-center gap-2">
             <h3 className="text-sm font-bold text-slate-900 tracking-tight">
-              Statutory SLA Alerts & Deadline Reminders
+              Statutory SLA Alerts &amp; Deadline Reminders
             </h3>
             {isSimulated && (
-              <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300 animate-pulse">
+              <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-300">
                 Simulated (+{simulatedDaysOffset}d)
               </span>
             )}
@@ -49,7 +49,7 @@ export function ExplainableAlertsSection() {
           </p>
         </div>
 
-        <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200 self-start sm:self-auto">
+        <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200 self-start sm:self-auto font-mono">
           {alerts.filter((a) => a.isOverdue).length} Overdue / Escalated
         </span>
       </div>

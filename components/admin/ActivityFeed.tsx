@@ -22,15 +22,15 @@ export function ActivityFeed({ items, isDemo = false }: ActivityFeedProps) {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
-      <div className="p-4 sm:p-5 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between">
+    <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
+      <div className="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/60 flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2">
             <h3 className="text-sm font-bold text-slate-900 tracking-tight">
               Recent Application Activity Feed
             </h3>
             {isDemo && (
-              <span className="text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 border border-slate-200">
+              <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-500 border border-slate-200">
                 Sample Feed
               </span>
             )}
@@ -42,7 +42,7 @@ export function ActivityFeed({ items, isDemo = false }: ActivityFeedProps) {
 
         <a
           href="/admin/audit-logs"
-          className="text-xs font-semibold text-teal-700 hover:text-teal-800 hover:underline"
+          className="text-xs font-semibold text-teal-700 hover:text-teal-900 transition-colors"
         >
           View Full Audit Trail &rarr;
         </a>

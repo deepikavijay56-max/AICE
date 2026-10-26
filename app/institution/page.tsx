@@ -8,6 +8,8 @@ import {
   ArrowRightIcon,
 } from "@/components/admin/Icons";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Institution Portal | AICTE SAKSHAM",
   description: "Submit new applications, track Extension of Approval (EoA), deficiency replies, and compliance affirmations",
@@ -340,7 +342,7 @@ async function InstitutionContent() {
                         <div className="flex items-center justify-end gap-1.5 flex-wrap">
                           {isDraft ? (
                             <Link
-                              href="/institution/applications/new"
+                              href={`/institution/applications/new?draftId=${app.id}`}
                               className="px-2.5 py-1 rounded-md bg-teal-600 hover:bg-teal-700 text-white font-bold text-[11px] transition-colors"
                             >
                               Continue Draft
@@ -364,7 +366,7 @@ async function InstitutionContent() {
 
                           {app.status === "scrutiny_clarification_sought" && (
                             <Link
-                              href="/admin/compliance"
+                              href="/institution/deficiencies"
                               className="px-2.5 py-1 rounded-md bg-rose-50 hover:bg-rose-100 text-rose-800 font-bold text-[11px] transition-colors border border-rose-200"
                             >
                               Upload Missing Documents

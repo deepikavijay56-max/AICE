@@ -94,20 +94,20 @@ export function ApplicationsTable({
   }, [filtered, currentPage, pageSize]);
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+    <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
       {/* Header controls: Search & Filter */}
-      <div className="p-4 sm:p-5 border-b border-slate-200 bg-slate-50/50 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+      <div className="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/60 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
         <div>
           <h2 className="text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            Recent Applications
+            Recent Statutory Applications
             {isDemo && (
-              <span className="text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 border border-slate-200">
+              <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-500 border border-slate-200">
                 Sample
               </span>
             )}
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Showing {filtered.length} of {initialApplications.length} applications
+            Showing {filtered.length} of {initialApplications.length} statutory dockets
           </p>
         </div>
 
@@ -123,7 +123,7 @@ export function ApplicationsTable({
                 setCurrentPage(1);
               }}
               placeholder="Search ID, college, region..."
-              className="pl-8 pr-3 py-1.5 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-slate-900 w-full sm:w-56"
+              className="pl-8 pr-3 py-1.5 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0B1F36] text-slate-900 w-full sm:w-56"
             />
           </div>
 
@@ -136,7 +136,7 @@ export function ApplicationsTable({
                 setStatusFilter(e.target.value);
                 setCurrentPage(1);
               }}
-              className="pl-8 pr-7 py-1.5 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-slate-800 font-medium appearance-none cursor-pointer"
+              className="pl-8 pr-7 py-1.5 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0B1F36] text-slate-800 font-medium appearance-none cursor-pointer"
             >
               <option value="ALL">All Statuses</option>
               <option value="submitted">Submitted</option>

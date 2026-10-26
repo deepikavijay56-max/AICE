@@ -33,6 +33,27 @@ interface ProfileData {
 
 interface NewApplicationWizardProps {
   profile: ProfileData;
+  initialDraft?: {
+    application: {
+      id: string;
+      application_number: string;
+      academic_year: string;
+      application_type: string;
+      current_stage: string;
+      status: string;
+      metadata: Record<string, unknown> | null;
+      institution_id: string;
+      workflow_definition?: { code: string } | null;
+    };
+    documents: Array<{
+      id: string;
+      category: string;
+      file_name: string;
+      file_size_bytes: number;
+      checksum_sha256: string;
+      storage_key: string;
+    }>;
+  } | null;
 }
 
 interface UploadedDocState {
@@ -46,26 +67,65 @@ interface UploadedDocState {
   error?: string;
 }
 
-export function NewApplicationWizard({ profile }: NewApplicationWizardProps) {
+export function NewApplicationWizard({ profile, initialDraft }: NewApplicationWizardProps) {
   // Wizard Steps: 1: Details -> 2: Upload Documents -> 3: Review Checklist -> 4: Complete
-  const [currentStep, setCurrentStep] = useState<number>(1);
+  const [currentStep, setCurrentStep] = useState<number>(() => {
+    if (initialDraft?.application) {
+      // If reopening draft with documents, go to Step 2
+      return 2;
+    }
+    return 1;
+  });
 
   // Step 1: Form state
-  const [applicationType, setApplicationType] = useState<string>("Extension of Approval (EoA)");
-  const academicYear = "2026-2027";
-  const [programType, setProgramType] = useState<string>("Engineering & Technology");
-  const [routeCode, setRouteCode] = useState<string>("SCRUTINY_ONLY");
-  const [intakeApplied, setIntakeApplied] = useState<number>(120);
-  const [notes, setNotes] = useState<string>("");
+  const [applicationType, setApplicationType] = useState<string>(
+    initialDraft?.application?.application_type || "Extension of Approval (EoA)"
+  );
+  const academicYear = initialDraft?.application?.academic_year || "2026-2027";
+  const [programType, setProgramType] = useState<string>(
+    (initialDraft?.application?.metadata?.program as string) || "Engineering & Technology"
+  );
+  const [routeCode, setRouteCode] = useState<string>(
+    (initialDraft?.application?.metadata?.statutory_route_code as string) ||
+    initialDraft?.application?.workflow_definition?.code ||
+    "SCRUTINY_ONLY"
+  );
+  const [intakeApplied, setIntakeApplied] = useState<number>(
+    (initialDraft?.application?.metadata?.intake_applied as number) || 120
+  );
+  const [notes, setNotes] = useState<string>(
+    (initialDraft?.application?.metadata?.notes as string) || ""
+  );
 
   // Application creation result
   const [isCreatingDraft, setIsCreatingDraft] = useState<boolean>(false);
-  const [applicationId, setApplicationId] = useState<string | null>(null);
-  const [applicationNumber, setApplicationNumber] = useState<string | null>(null);
+  const [applicationId, setApplicationId] = useState<string | null>(
+    initialDraft?.application?.id || null
+  );
+  const [applicationNumber, setApplicationNumber] = useState<string | null>(
+    initialDraft?.application?.application_number || null
+  );
   const [draftError, setDraftError] = useState<string | null>(null);
 
   // Step 2: Upload state
-  const [uploadedDocs, setUploadedDocs] = useState<Record<string, UploadedDocState>>({});
+  const [uploadedDocs, setUploadedDocs] = useState<Record<string, UploadedDocState>>(() => {
+    if (initialDraft?.documents && initialDraft.documents.length > 0) {
+      const map: Record<string, UploadedDocState> = {};
+      for (const d of initialDraft.documents) {
+        map[d.category] = {
+          id: d.id,
+          category: d.category,
+          fileName: d.file_name,
+          fileSizeBytes: d.file_size_bytes,
+          checksumSha256: d.checksum_sha256,
+          storageKey: d.storage_key,
+          uploading: false,
+        };
+      }
+      return map;
+    }
+    return {};
+  });
 
   // Step 3: Review & Submission state
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -73,9 +133,15 @@ export function NewApplicationWizard({ profile }: NewApplicationWizardProps) {
   const [affirmationChecked, setAffirmationChecked] = useState<boolean>(false);
   const [submittedRef, setSubmittedRef] = useState<string | null>(null);
 
-  // Handler: Step 1 Create Draft
+  // Handler: Step 1 Create or Update Draft
   async function handleCreateDraft(e: React.FormEvent) {
     e.preventDefault();
+    if (applicationId && applicationNumber) {
+      // Already has saved draft, advance to uploads
+      setCurrentStep(2);
+      return;
+    }
+
     setIsCreatingDraft(true);
     setDraftError(null);
 

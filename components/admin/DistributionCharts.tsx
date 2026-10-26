@@ -32,7 +32,7 @@ export function DistributionCharts({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Chart 1: Applications by Status */}
-      <div className="p-6 bg-white rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between">
+      <div className="p-5 sm:p-6 bg-white rounded-xl border border-slate-200/80 shadow-xs flex flex-col justify-between">
         <div>
           <div className="flex items-center justify-between">
             <div>
@@ -44,7 +44,7 @@ export function DistributionCharts({
               </p>
             </div>
             {isDemo && (
-              <span className="text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 border border-slate-200">
+              <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-500 border border-slate-200">
                 Demo Sample
               </span>
             )}
@@ -52,7 +52,7 @@ export function DistributionCharts({
 
           {/* Stacked Progress Bar */}
           <div className="mt-5">
-            <div className="h-4 w-full bg-slate-100 rounded-full overflow-hidden flex shadow-inner">
+            <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden flex">
               {statusData.map((item) => (
                 <div
                   key={item.status}
@@ -62,10 +62,10 @@ export function DistributionCharts({
                 />
               ))}
             </div>
-            <div className="flex items-center justify-between text-[11px] text-slate-400 mt-1.5">
+            <div className="flex items-center justify-between text-[11px] text-slate-400 mt-1.5 font-mono">
               <span>0%</span>
-              <span className="font-medium text-slate-600">
-                Total Tracked: {totalAppsByStatus.toLocaleString()} Applications
+              <span className="font-semibold text-slate-600">
+                Total Monitored: {totalAppsByStatus.toLocaleString()} Applications
               </span>
               <span>100%</span>
             </div>
