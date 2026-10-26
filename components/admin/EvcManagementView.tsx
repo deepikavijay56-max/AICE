@@ -72,25 +72,47 @@ export function EvcManagementView({ visits }: EvcManagementViewProps) {
 
   return (
     <div className="space-y-6">
-      {/* Action feedback */}
+      {/* Action feedback with route-aware confirmation and navigation */}
       {actionFeedback && (
         <div
-          className={`p-3.5 rounded-xl border text-xs flex items-center justify-between ${
+          className={`p-4 rounded-xl border text-xs space-y-2.5 ${
             actionFeedback.type === "success"
-              ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+              ? "bg-emerald-50 text-emerald-950 border-emerald-300"
               : "bg-rose-50 text-rose-800 border-rose-200"
           }`}
         >
-          <div className="flex items-center gap-2">
-            <CheckCircleIcon className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span>{actionFeedback.message}</span>
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start gap-2.5">
+              <CheckCircleIcon className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-bold text-slate-900 leading-snug">{actionFeedback.message}</p>
+                <p className="text-[11px] text-slate-600 mt-0.5">
+                  The application has been progressed according to its configured statutory route. The next authorized authority has received the docket in their work queue.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setActionFeedback(null)}
+              className="text-[11px] font-bold text-slate-500 hover:text-slate-800 underline ml-2 shrink-0"
+            >
+              Dismiss
+            </button>
           </div>
-          <button
-            onClick={() => setActionFeedback(null)}
-            className="text-[11px] font-bold underline ml-2"
-          >
-            Dismiss
-          </button>
+
+          <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-emerald-200/60">
+            <Link
+              href="/admin/applications"
+              className="px-3 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs transition-colors"
+            >
+              View Application in Next Work Queue &rarr;
+            </Link>
+            <Link
+              href="/admin/evc-visits"
+              className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs transition-colors"
+            >
+              View All EVC Inspections
+            </Link>
+          </div>
         </div>
       )}
 
