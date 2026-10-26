@@ -15,6 +15,7 @@ export interface ApplicationRow {
   academicYear: string;
   status: ApplicationStatus;
   currentStage: string;
+  routeCode?: string;
   submittedAt: string | null;
   targetDecisionDate: string | null;
 }
@@ -210,7 +211,14 @@ export function ApplicationsTable({
               paginated.map((app) => (
                 <tr key={app.id} className="hover:bg-slate-50/80 transition-colors">
                   <td className="py-3.5 px-4">
-                    <div className="font-bold text-slate-900">{app.applicationNumber}</div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-bold text-slate-900">{app.applicationNumber}</span>
+                      {app.routeCode && (
+                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                          {app.routeCode}
+                        </span>
+                      )}
+                    </div>
                     <div className="text-[11px] text-slate-500 font-mono">
                       AY {app.academicYear}
                     </div>
@@ -233,8 +241,8 @@ export function ApplicationsTable({
                   </td>
                   <td className="py-3.5 px-4">
                     <StatusBadge status={app.status} size="sm" />
-                    <div className="text-[10px] text-slate-400 mt-1 capitalize">
-                      Stage: {app.currentStage.replace(/_/g, " ")}
+                    <div className="text-[10px] text-slate-500 mt-1 capitalize font-medium flex items-center gap-1">
+                      <span>Stage: {app.currentStage.replace(/_/g, " ")}</span>
                     </div>
                   </td>
                   <td className="py-3.5 px-4 text-slate-600">

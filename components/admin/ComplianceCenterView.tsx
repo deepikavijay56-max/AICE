@@ -18,6 +18,7 @@ interface ComplianceCenterViewProps {
 export function ComplianceCenterView({
   complianceItems,
   undertakings,
+  isDemo = false,
 }: ComplianceCenterViewProps) {
   const [activeTab, setActiveTab] = useState<"deficiencies" | "undertakings">("deficiencies");
   const [searchQuery, setSearchQuery] = useState("");
@@ -107,34 +108,42 @@ export function ComplianceCenterView({
       )}
 
       {/* Tabs */}
-      <div className="flex border-b border-slate-200 gap-1 text-xs font-semibold">
-        <button
-          onClick={() => setActiveTab("deficiencies")}
-          className={`px-4 py-2.5 border-b-2 transition-all flex items-center gap-2 ${
-            activeTab === "deficiencies"
-              ? "border-teal-600 text-teal-700 bg-teal-50/30"
-              : "border-transparent text-slate-600 hover:text-slate-900"
-          }`}
-        >
-          <span>Deficiency Submissions & Clarifications</span>
-          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-700">
-            {complianceItems.length}
-          </span>
-        </button>
+      <div className="flex items-center justify-between border-b border-slate-200">
+        <div className="flex gap-1 text-xs font-semibold">
+          <button
+            onClick={() => setActiveTab("deficiencies")}
+            className={`px-4 py-2.5 border-b-2 transition-all flex items-center gap-2 ${
+              activeTab === "deficiencies"
+                ? "border-teal-600 text-teal-700 bg-teal-50/30"
+                : "border-transparent text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <span>Deficiency Submissions & Clarifications</span>
+            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-700">
+              {complianceItems.length}
+            </span>
+          </button>
 
-        <button
-          onClick={() => setActiveTab("undertakings")}
-          className={`px-4 py-2.5 border-b-2 transition-all flex items-center gap-2 ${
-            activeTab === "undertakings"
-              ? "border-teal-600 text-teal-700 bg-teal-50/30"
-              : "border-transparent text-slate-600 hover:text-slate-900"
-          }`}
-        >
-          <span>Statutory Affirmations & Undertakings</span>
-          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-700">
-            {undertakings.length}
+          <button
+            onClick={() => setActiveTab("undertakings")}
+            className={`px-4 py-2.5 border-b-2 transition-all flex items-center gap-2 ${
+              activeTab === "undertakings"
+                ? "border-teal-600 text-teal-700 bg-teal-50/30"
+                : "border-transparent text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <span>Statutory Affirmations & Undertakings</span>
+            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-700">
+              {undertakings.length}
+            </span>
+          </button>
+        </div>
+
+        {isDemo && (
+          <span className="text-[10px] font-mono uppercase font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-500 border border-slate-200 mr-2">
+            Sample Registry
           </span>
-        </button>
+        )}
       </div>
 
       {/* Search & Filters */}

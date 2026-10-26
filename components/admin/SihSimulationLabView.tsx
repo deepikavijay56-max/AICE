@@ -53,6 +53,17 @@ const SYNTHETIC_SCENARIOS: SyntheticScenario[] = [
     responsibleRole: "evc_expert",
     description: "Appellate inspection following minor animal house carpet area deficiency observation in initial scrutiny.",
   },
+  {
+    id: "scen-4",
+    applicationNumber: "SIM-2026-POLY-00055",
+    institutionName: "Vidya Pratishthan Polytechnic Institute",
+    routeCode: "Route D: Only EVC",
+    currentStage: "evc_scheduled",
+    nominalTurnaroundDays: 7,
+    thresholdWarningDays: 2,
+    responsibleRole: "evc_expert",
+    description: "Surprise regulatory infrastructure inspection directed by Council Bureau for quality benchmarking.",
+  },
 ];
 
 interface SimulationEventLog {

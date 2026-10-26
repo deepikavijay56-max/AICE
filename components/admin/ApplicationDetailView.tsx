@@ -78,6 +78,11 @@ export function ApplicationDetailView({
               <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-100 text-slate-700 border border-slate-200">
                 AY {application.academic_year}
               </span>
+              {application.workflow_definition?.code && (
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-blue-50 text-blue-800 border border-blue-200">
+                  Route: {application.workflow_definition.code}
+                </span>
+              )}
             </div>
 
             <div>
@@ -138,45 +143,81 @@ export function ApplicationDetailView({
           </div>
         </div>
 
-        {/* Real Application Lifecycle Stepper */}
+        {/* Route-Aware Application Lifecycle Stepper */}
         {(() => {
-          const STAGES = [
-            { key: "submitted", label: "Submission", role: "Applicant Institute" },
-            { key: "under_scrutiny", label: "Scrutiny Verification", role: "Scrutiny Officer" },
-            { key: "evc_scheduled", label: "EVC Inspection", role: "EVC Expert Committee" },
-            { key: "evc_completed", label: "Report Appraisal", role: "Regional Officer" },
-            { key: "council_decision_pending", label: "Council Determination", role: "Executive Council" },
-            { key: "approved", label: "Sanction Issued", role: "Council Bureau" },
-          ];
+          const routeCode = application.workflow_definition?.code ||
+            (application.application_type?.includes("Extension") ? "SCRUTINY_ONLY" :
+             application.status === "sac_review" ? "EVC_SAC" : "SCRUTINY_EVC");
 
-          const stageIndexMap: Record<string, number> = {
-            submitted: 0,
-            under_scrutiny: 1,
-            evc_scheduled: 2,
-            evc_completed: 3,
-            sac_review: 3,
-            council_decision_pending: 4,
-            approved: 5,
-            rejected: 5,
-          };
+          let STAGES: Array<{ key: string; label: string; role: string }>;
 
-          const currentIdx = stageIndexMap[application.status] ?? stageIndexMap[application.current_stage] ?? 1;
+          if (routeCode === "SCRUTINY_ONLY") {
+            STAGES = [
+              { key: "submitted", label: "Formal Inception", role: "Applicant Institute" },
+              { key: "under_scrutiny", label: "Document Scrutiny", role: "Scrutiny Officer" },
+              { key: "council_decision_pending", label: "Council Determination", role: "Executive Council" },
+              { key: "approved", label: "Sanction Issued", role: "Council Bureau" },
+            ];
+          } else if (routeCode === "EVC_SAC") {
+            STAGES = [
+              { key: "under_scrutiny", label: "Scrutiny Verification", role: "Scrutiny Officer" },
+              { key: "evc_scheduled", label: "EVC Inspection", role: "EVC Expert Committee" },
+              { key: "evc_completed", label: "Report Appraisal", role: "Regional Officer" },
+              { key: "sac_review", label: "SAC Hearing", role: "Appellate Committee" },
+              { key: "council_decision_pending", label: "Council Determination", role: "Executive Council" },
+              { key: "approved", label: "Sanction Issued", role: "Council Bureau" },
+            ];
+          } else if (routeCode === "ONLY_EVC") {
+            STAGES = [
+              { key: "evc_scheduled", label: "Physical Dispatch", role: "EVC Expert Committee" },
+              { key: "evc_completed", label: "Inspection Report", role: "Regional Officer" },
+              { key: "council_decision_pending", label: "Council Determination", role: "Executive Council" },
+              { key: "approved", label: "Sanction Issued", role: "Council Bureau" },
+            ];
+          } else {
+            // Default: SCRUTINY_EVC
+            STAGES = [
+              { key: "submitted", label: "Submission", role: "Applicant Institute" },
+              { key: "under_scrutiny", label: "Scrutiny Verification", role: "Scrutiny Officer" },
+              { key: "evc_scheduled", label: "EVC Inspection", role: "EVC Expert Committee" },
+              { key: "evc_completed", label: "Report Appraisal", role: "Regional Officer" },
+              { key: "council_decision_pending", label: "Council Determination", role: "Executive Council" },
+              { key: "approved", label: "Sanction Issued", role: "Council Bureau" },
+            ];
+          }
+
+          // Compute active stage index relative to the route's STAGES
+          const currentStageKey = application.status === "scrutiny_clarification_sought"
+            ? "under_scrutiny"
+            : application.status === "rejected"
+            ? "approved"
+            : application.status;
+
+          let currentIdx = STAGES.findIndex((s) => s.key === currentStageKey);
+          if (currentIdx === -1) {
+            currentIdx = 1; // default to scrutiny
+          }
 
           return (
             <div className="mt-6 pt-5 border-t border-slate-100">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-bold text-slate-900 tracking-tight">
-                  Statutory Approval Lifecycle
-                </span>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mb-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-slate-900 tracking-tight">
+                    Statutory Approval Lifecycle
+                  </span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-bold border border-slate-200">
+                    Route: {routeCode}
+                  </span>
+                </div>
                 <span className="text-[11px] text-slate-500">
                   Active Stage: <strong className="text-blue-700 capitalize">{application.status.replace(/_/g, " ")}</strong>
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+              <div className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-${STAGES.length} gap-2`}>
                 {STAGES.map((s, idx) => {
-                  const isCompleted = idx < currentIdx;
-                  const isCurrent = idx === currentIdx;
+                  const isCompleted = idx < currentIdx || application.status === "approved";
+                  const isCurrent = idx === currentIdx && application.status !== "approved";
 
                   return (
                     <div

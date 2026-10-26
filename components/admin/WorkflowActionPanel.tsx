@@ -236,11 +236,25 @@ export function WorkflowActionPanel({
             </p>
           </div>
         ) : availableActions.length === 0 ? (
-          <div className="p-4 rounded-lg bg-slate-50 border border-slate-200 text-center">
-            <p className="text-xs text-slate-500">
-              No authorized transitions currently available for role Council Admin in state{" "}
-              <code className="font-mono text-slate-700">{currentStatus}</code>.
+          <div className="p-4 rounded-xl bg-amber-50/80 border border-amber-200 text-left space-y-2">
+            <div className="flex items-center gap-2 text-xs font-bold text-amber-900">
+              <AlertCircleIcon className="w-4 h-4 text-amber-600 shrink-0" />
+              <span>Pending Action from Responsible Statutory Authority</span>
+            </div>
+            <p className="text-xs text-amber-800 leading-relaxed">
+              This case is currently locked at stage <strong className="font-mono uppercase">{currentStatus.replace(/_/g, " ")}</strong>.
+              {currentStatus === "draft" && " Waiting on Institution Admin to complete statutory document uploads and execute digital undertaking."}
+              {currentStatus === "submitted" && " Waiting on Regional Scrutiny Officer to initiate document scrutiny and title verification."}
+              {currentStatus === "under_scrutiny" && " Scrutiny Committee is currently reviewing uploaded infrastructure proof and compliance checklist."}
+              {currentStatus === "scrutiny_clarification_sought" && " Waiting on Institutional Applicant to submit deficiency clarifications and rectifications."}
+              {currentStatus === "evc_scheduled" && " Assigned 3-member Expert Visiting Committee (EVC) is conducting on-site physical/virtual audit."}
+              {currentStatus === "evc_completed" && " Regional Officer is appraising the EVC inspection report and compliance score."}
+              {currentStatus === "sac_review" && " Standing Appellate Committee (SAC) is holding a hearing regarding contested inspection observations."}
+              {currentStatus === "council_decision_pending" && " Executive Council Approval Bureau is convening for final statutory determination."}
             </p>
+            <div className="text-[11px] text-amber-700/90 pt-1 font-mono">
+              Enforced by: PostgreSQL Trigger enforce_application_integrity()
+            </div>
           </div>
         ) : (
           <div className="space-y-4">

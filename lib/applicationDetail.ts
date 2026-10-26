@@ -58,6 +58,15 @@ function getSyntheticDetail(id: string): DetailedApplicationResult {
       city: "Mumbai",
       address_line1: "Vidyanagar, Vidyavihar East",
     },
+    workflow_definition: {
+      id: "wf-statutory-1",
+      code: baseDemo.applicationNumber.includes("PHAR") ? "EVC_SAC" :
+            baseDemo.applicationNumber.includes("POLY") ? "ONLY_EVC" :
+            baseDemo.applicationNumber.includes("MGMT") ? "SCRUTINY_ONLY" : "SCRUTINY_EVC",
+      title: baseDemo.applicationNumber.includes("PHAR") ? "Route C: EVC + SAC Review" :
+             baseDemo.applicationNumber.includes("POLY") ? "Route D: Only EVC Inspection" :
+             baseDemo.applicationNumber.includes("MGMT") ? "Route A: Scrutiny Only" : "Route B: Scrutiny + EVC",
+    },
     region: {
       id: "reg-synthetic-1",
       name: baseDemo.regionName,

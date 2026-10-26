@@ -177,6 +177,12 @@ export interface FullApplicationDetail {
     regional_officer_name?: string | null;
     office_address?: string | null;
   } | null;
+  workflow_definition?: {
+    id: string;
+    code: string;
+    title: string;
+    stage_sequence?: Array<{ stageKey: string; stageName: string; roleRequired: string }>;
+  } | null;
   application_events?: QueryApplicationEvent[];
   evc_visits?: QueryEvcVisit[];
   compliance_submissions?: QueryComplianceSubmission[];
@@ -184,3 +190,4 @@ export interface FullApplicationDetail {
   undertakings?: QueryUndertaking[];
   documents?: QueryDocument[];
 }
+
