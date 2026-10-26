@@ -7,8 +7,8 @@ import {
   uploadApplicationDocument,
   deleteApplicationDocument,
   submitApplication,
-  MANDATORY_DOCUMENT_CATEGORIES,
 } from "../../actions";
+import { MANDATORY_DOCUMENT_CATEGORIES } from "../../constants";
 import {
   FileTextIcon,
   ShieldCheckIcon,

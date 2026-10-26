@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { MANDATORY_DOCUMENT_CATEGORIES } from "../../app/institution/actions";
+import { MANDATORY_DOCUMENT_CATEGORIES } from "../../app/institution/constants";
 
 console.log("=== AICTE SAKSHAM Automated Application & Document Submission Verification ===");
 
