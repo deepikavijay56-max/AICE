@@ -21,11 +21,11 @@ async function DashboardOverviewContent() {
   return (
     <div className="space-y-8">
       {/* Banner / Operational Status Alert */}
-      <div className="p-4 rounded-xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border border-slate-700/80 text-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-5 rounded-xl bg-[#0B1F36] border border-[#142D4E] text-white shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-teal-400 animate-pulse" />
-            <h2 className="text-sm font-bold text-teal-300 uppercase tracking-wider">
+            <span className="w-2 h-2 rounded-full bg-teal-400" />
+            <h2 className="text-xs font-bold text-teal-300 uppercase tracking-wider">
               Statutory Approval Cycle 2026-2027
             </h2>
           </div>
@@ -34,10 +34,10 @@ async function DashboardOverviewContent() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 shrink-0">
           <a
             href="/admin/workflows"
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-teal-600 hover:bg-teal-500 text-white transition-colors"
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold bg-teal-600 hover:bg-teal-500 text-white transition-colors shadow-xs"
           >
             <span>View SLA Policies</span>
             <ExternalLinkIcon className="w-3.5 h-3.5" />

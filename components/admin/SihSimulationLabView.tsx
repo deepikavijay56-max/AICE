@@ -6,6 +6,7 @@ import {
   RefreshIcon,
   ActivityIcon,
 } from "@/components/admin/Icons";
+import { useTimeMachine } from "@/components/admin/TimeMachineContext";
 
 interface SyntheticScenario {
   id: string;
@@ -17,6 +18,8 @@ interface SyntheticScenario {
   thresholdWarningDays: number;
   responsibleRole: string;
   description: string;
+  permittedAction: string;
+  nextPermittedStage: string;
 }
 
 const SYNTHETIC_SCENARIOS: SyntheticScenario[] = [
@@ -30,17 +33,21 @@ const SYNTHETIC_SCENARIOS: SyntheticScenario[] = [
     thresholdWarningDays: 3,
     responsibleRole: "scrutiny_officer",
     description: "New program introduction in Autonomous Systems. Requires scrutiny clearance followed by 3-member EVC on-site audit.",
+    permittedAction: "Issue Scrutiny Clearance & Schedule EVC",
+    nextPermittedStage: "evc_scheduled",
   },
   {
     id: "scen-2",
     applicationNumber: "SIM-2026-MGMT-00412",
     institutionName: "Metropolitan School of Executive Management",
     routeCode: "Route A: Scrutiny Only",
-    currentStage: "council_decision_pending",
+    currentStage: "under_scrutiny",
     nominalTurnaroundDays: 10,
     thresholdWarningDays: 2,
-    responsibleRole: "council_admin",
-    description: "Standard Extension of Approval (EoA) with unvaried intake capacity. Awaiting final Member Secretary cryptographic signature.",
+    responsibleRole: "scrutiny_officer",
+    description: "Standard Extension of Approval (EoA) with unvaried intake capacity. Requires scrutiny recommendation before Council endorsement.",
+    permittedAction: "Submit Scrutiny Report to Council",
+    nextPermittedStage: "council_decision_pending",
   },
   {
     id: "scen-3",
@@ -52,6 +59,8 @@ const SYNTHETIC_SCENARIOS: SyntheticScenario[] = [
     thresholdWarningDays: 2,
     responsibleRole: "evc_expert",
     description: "Appellate inspection following minor animal house carpet area deficiency observation in initial scrutiny.",
+    permittedAction: "Complete Inspection & File EVC Report",
+    nextPermittedStage: "evc_completed",
   },
   {
     id: "scen-4",
@@ -63,6 +72,8 @@ const SYNTHETIC_SCENARIOS: SyntheticScenario[] = [
     thresholdWarningDays: 2,
     responsibleRole: "evc_expert",
     description: "Surprise regulatory infrastructure inspection directed by Council Bureau for quality benchmarking.",
+    permittedAction: "Submit Surprise EVC Audit Findings",
+    nextPermittedStage: "council_decision_pending",
   },
 ];
 
@@ -70,16 +81,24 @@ interface SimulationEventLog {
   id: string;
   virtualDay: number;
   timestamp: string;
-  type: "INFO" | "APPROACHING_DEADLINE" | "SLA_BREACH" | "ESCALATION_TRIGGERED";
+  type: "INFO" | "APPROACHING_DEADLINE" | "SLA_BREACH" | "ESCALATION_TRIGGERED" | "ACTION_EXECUTED";
   title: string;
   detail: string;
   targetRole: string;
 }
 
 export function SihSimulationLabView() {
+  const { simulatedDaysOffset, advanceDays, resetTime } = useTimeMachine();
   const [selectedScenario, setSelectedScenario] = useState<SyntheticScenario>(SYNTHETIC_SCENARIOS[0]);
-  const [virtualDaysElapsed, setVirtualDaysElapsed] = useState<number>(0);
+  const [scenarioState, setScenarioState] = useState<Record<string, { currentStage: string; completedAction?: string }>>({
+    "scen-1": { currentStage: SYNTHETIC_SCENARIOS[0].currentStage },
+    "scen-2": { currentStage: SYNTHETIC_SCENARIOS[1].currentStage },
+    "scen-3": { currentStage: SYNTHETIC_SCENARIOS[2].currentStage },
+    "scen-4": { currentStage: SYNTHETIC_SCENARIOS[3].currentStage },
+  });
   const [activeStepIndex, setActiveStepIndex] = useState<number>(0);
+  const [actionSuccessNotice, setActionSuccessNotice] = useState<string | null>(null);
+  const [isExecutingAction, setIsExecutingAction] = useState<boolean>(false);
   const [eventLogs, setEventLogs] = useState<SimulationEventLog[]>([
     {
       id: "log-init",
@@ -92,20 +111,24 @@ export function SihSimulationLabView() {
     },
   ]);
 
-  const daysRemaining = selectedScenario.nominalTurnaroundDays - virtualDaysElapsed;
+  const activeStage = scenarioState[selectedScenario.id]?.currentStage || selectedScenario.currentStage;
+  const isActionCompleted = Boolean(scenarioState[selectedScenario.id]?.completedAction);
+
+  const daysRemaining = selectedScenario.nominalTurnaroundDays - simulatedDaysOffset;
   const isApproaching = daysRemaining > 0 && daysRemaining <= selectedScenario.thresholdWarningDays;
   const isOverdue = daysRemaining <= 0;
 
   const handleAdvance = (daysToAdd: number) => {
-    const nextDays = virtualDaysElapsed + daysToAdd;
-    setVirtualDaysElapsed(nextDays);
+    advanceDays(daysToAdd);
+    const nextDays = simulatedDaysOffset + daysToAdd;
+    setActionSuccessNotice(null);
 
     const newLogs: SimulationEventLog[] = [];
     const remaining = selectedScenario.nominalTurnaroundDays - nextDays;
 
     if (remaining > 0 && remaining <= selectedScenario.thresholdWarningDays) {
       newLogs.push({
-        id: `log-warn-${nextDays}`,
+        id: `log-warn-${nextDays}-${Date.now()}`,
         virtualDay: nextDays,
         timestamp: `Day ${String(nextDays).padStart(2, "0")} (10:30 AM IST)`,
         type: "APPROACHING_DEADLINE",
@@ -117,7 +140,7 @@ export function SihSimulationLabView() {
     } else if (remaining <= 0) {
       const overdueDays = Math.abs(remaining);
       newLogs.push({
-        id: `log-breach-${nextDays}`,
+        id: `log-breach-${nextDays}-${Date.now()}`,
         virtualDay: nextDays,
         timestamp: `Day ${String(nextDays).padStart(2, "0")} (08:00 AM IST)`,
         type: "SLA_BREACH",
@@ -126,7 +149,7 @@ export function SihSimulationLabView() {
         targetRole: selectedScenario.responsibleRole,
       });
       newLogs.push({
-        id: `log-esc-${nextDays}`,
+        id: `log-esc-${nextDays}-${Date.now()}`,
         virtualDay: nextDays,
         timestamp: `Day ${String(nextDays).padStart(2, "0")} (08:05 AM IST)`,
         type: "ESCALATION_TRIGGERED",
@@ -137,7 +160,7 @@ export function SihSimulationLabView() {
       setActiveStepIndex(5);
     } else {
       newLogs.push({
-        id: `log-adv-${nextDays}`,
+        id: `log-adv-${nextDays}-${Date.now()}`,
         virtualDay: nextDays,
         timestamp: `Day ${String(nextDays).padStart(2, "0")} (09:00 AM IST)`,
         type: "INFO",
@@ -151,17 +174,62 @@ export function SihSimulationLabView() {
     setEventLogs((prev) => [...newLogs, ...prev]);
   };
 
+  const handleSimulateBreach = () => {
+    const requiredDays = Math.max(1, selectedScenario.nominalTurnaroundDays - simulatedDaysOffset + 2);
+    handleAdvance(requiredDays);
+  };
+
+  const handleExecutePermittedAction = () => {
+    setIsExecutingAction(true);
+    setActionSuccessNotice(null);
+
+    setTimeout(() => {
+      const currentNextStage = selectedScenario.nextPermittedStage;
+      setScenarioState((prev) => ({
+        ...prev,
+        [selectedScenario.id]: {
+          currentStage: currentNextStage,
+          completedAction: selectedScenario.permittedAction,
+        },
+      }));
+
+      const actionLog: SimulationEventLog = {
+        id: `log-act-${Date.now()}`,
+        virtualDay: simulatedDaysOffset,
+        timestamp: `Day ${String(simulatedDaysOffset).padStart(2, "0")} (02:45 PM IST)`,
+        type: "ACTION_EXECUTED",
+        title: `Executed: ${selectedScenario.permittedAction}`,
+        detail: `Statutory action executed for ${selectedScenario.applicationNumber}. Application progressed from ${activeStage.replace(/_/g, " ")} to ${currentNextStage.replace(/_/g, " ")}. Immutable audit log generated under AICTE APH 2026-27 statutory rules.`,
+        targetRole: selectedScenario.responsibleRole,
+      };
+
+      setEventLogs((prev) => [actionLog, ...prev]);
+      setActiveStepIndex(7);
+      setActionSuccessNotice(
+        `Action completed: "${selectedScenario.permittedAction}". Case stage updated to "${currentNextStage.replace(/_/g, " ")}".`
+      );
+      setIsExecutingAction(false);
+    }, 400);
+  };
+
   const handleReset = () => {
-    setVirtualDaysElapsed(0);
+    resetTime();
     setActiveStepIndex(0);
+    setActionSuccessNotice(null);
+    setScenarioState({
+      "scen-1": { currentStage: SYNTHETIC_SCENARIOS[0].currentStage },
+      "scen-2": { currentStage: SYNTHETIC_SCENARIOS[1].currentStage },
+      "scen-3": { currentStage: SYNTHETIC_SCENARIOS[2].currentStage },
+      "scen-4": { currentStage: SYNTHETIC_SCENARIOS[3].currentStage },
+    });
     setEventLogs([
       {
-        id: `log-reset-step`,
+        id: `log-reset-step-${Date.now()}`,
         virtualDay: 0,
         timestamp: "Day 00 (09:00 AM IST)",
         type: "INFO",
         title: "Simulation Environment Reset",
-        detail: `Virtual clock rewound to Day 0. All simulated escalation triggers cleared.`,
+        detail: `Virtual clock rewound to Day 0. All synthetic cases, stage transitions, and escalation alerts restored to baseline. Production records remain untouched.`,
         targetRole: selectedScenario.responsibleRole,
       },
     ]);
@@ -169,18 +237,19 @@ export function SihSimulationLabView() {
 
   const handleSelectScenario = (scen: SyntheticScenario) => {
     setSelectedScenario(scen);
-    setVirtualDaysElapsed(0);
     setActiveStepIndex(1);
-    setEventLogs([
+    setActionSuccessNotice(null);
+    setEventLogs((prev) => [
       {
-        id: `log-switch-${scen.id}`,
-        virtualDay: 0,
-        timestamp: "Day 00 (09:00 AM IST)",
+        id: `log-switch-${scen.id}-${Date.now()}`,
+        virtualDay: simulatedDaysOffset,
+        timestamp: `Day ${String(simulatedDaysOffset).padStart(2, "0")} (09:00 AM IST)`,
         type: "INFO",
         title: `Scenario Switched to ${scen.applicationNumber}`,
         detail: `Active route: ${scen.routeCode}. Nominal turnaround: ${scen.nominalTurnaroundDays} days.`,
         targetRole: scen.responsibleRole,
       },
+      ...prev,
     ]);
   };
 
@@ -289,7 +358,7 @@ export function SihSimulationLabView() {
                   Virtual Clock Control
                 </span>
                 <span className="text-xs font-mono font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
-                  +{virtualDaysElapsed} Virtual Days
+                  +{simulatedDaysOffset} Virtual Days
                 </span>
               </div>
 
@@ -316,12 +385,35 @@ export function SihSimulationLabView() {
                   <span className="block text-[10px] text-rose-700 font-normal">Breach/Escalate</span>
                 </button>
               </div>
+
+              {/* Instant SLA Breach Trigger */}
+              <button
+                onClick={handleSimulateBreach}
+                className="w-full mt-2 py-2 px-3 rounded-lg bg-rose-50 hover:bg-rose-100 border border-rose-300 text-rose-900 text-xs font-bold transition-all flex items-center justify-center gap-2"
+              >
+                <span>Trigger Instant SLA Breach Simulation</span>
+              </button>
             </div>
           </div>
         </div>
 
         {/* Right 2 Columns: Live Simulated Flight Recorder & Radar State */}
         <div className="lg:col-span-2 space-y-4">
+          {actionSuccessNotice && (
+            <div className="p-3.5 rounded-xl bg-teal-50 border border-teal-300 text-teal-900 text-xs font-semibold flex items-center justify-between shadow-2xs">
+              <span className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
+                {actionSuccessNotice}
+              </span>
+              <button
+                onClick={() => setActionSuccessNotice(null)}
+                className="text-teal-700 hover:text-teal-900 font-bold ml-2"
+              >
+                &times;
+              </button>
+            </div>
+          )}
+
           {/* Active Synthetic Radar Card */}
           <div
             className={`rounded-xl border p-5 transition-all shadow-xs ${
@@ -341,7 +433,8 @@ export function SihSimulationLabView() {
                   {selectedScenario.institutionName}
                 </h3>
                 <div className="text-xs text-slate-500 font-mono mt-0.5">
-                  Ref: {selectedScenario.applicationNumber} &bull; Stage: {selectedScenario.currentStage.replace(/_/g, " ")}
+                  Ref: {selectedScenario.applicationNumber} &bull; Stage:{" "}
+                  <span className="font-bold text-slate-800">{activeStage.replace(/_/g, " ")}</span>
                 </div>
               </div>
 
@@ -390,12 +483,46 @@ export function SihSimulationLabView() {
               <div className="bg-white/90 p-3 rounded-lg border border-slate-200">
                 <span className="text-[10px] font-bold uppercase text-slate-400">Next Permitted Step</span>
                 <p className="font-bold text-teal-700 mt-0.5">
-                  {isOverdue ? "Escalate to Bureau / Officer" : "Issue Scrutiny Decision Order"}
+                  {isActionCompleted
+                    ? "Stage Action Completed"
+                    : isOverdue
+                    ? "Escalate to Bureau / Officer"
+                    : selectedScenario.permittedAction}
                 </p>
                 <p className="text-[11px] text-slate-500 mt-1">
                   Validated against statutory workflow state rules.
                 </p>
               </div>
+            </div>
+
+            {/* Step 08 Action Execution Gate */}
+            <div className="mt-4 pt-3 border-t border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="text-xs text-slate-600">
+                <span className="font-bold text-slate-800">Action Gate (Step 08):</span>{" "}
+                {isActionCompleted
+                  ? `Completed stage transition to "${activeStage.replace(/_/g, " ")}".`
+                  : `Permitted transition: advance case to "${selectedScenario.nextPermittedStage.replace(/_/g, " ")}".`}
+              </div>
+
+              <button
+                onClick={handleExecutePermittedAction}
+                disabled={isExecutingAction || isActionCompleted}
+                className={`px-4 py-2 rounded-lg font-bold text-xs transition-all flex items-center gap-2 shadow-xs ${
+                  isActionCompleted
+                    ? "bg-emerald-100 text-emerald-800 border border-emerald-300 cursor-not-allowed"
+                    : isExecutingAction
+                    ? "bg-teal-300 text-white cursor-wait"
+                    : "bg-teal-700 hover:bg-teal-800 text-white shadow-teal-700/20"
+                }`}
+              >
+                {isExecutingAction ? (
+                  <span>Executing Action...</span>
+                ) : isActionCompleted ? (
+                  <span>Action Completed</span>
+                ) : (
+                  <span>Run Permitted Statutory Action</span>
+                )}
+              </button>
             </div>
           </div>
 

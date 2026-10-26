@@ -5,6 +5,7 @@ import { AccessDeniedView } from "@/components/auth/AccessDeniedView";
 import { RoleDashboardShell } from "@/components/navigation/RoleDashboardShell";
 import { createServerClient } from "@/lib/supabase/server";
 import { ArrowRightIcon } from "@/components/admin/Icons";
+import { PageHeader } from "@/components/ui/PageHeader";
 
 export const metadata = {
   title: "Scrutiny Officer Worklist | AICTE SAKSHAM",
@@ -169,37 +170,32 @@ async function ScrutinyContent() {
       fullName={user?.fullName || "Scrutiny Officer"}
     >
       <div className="space-y-6 max-w-7xl mx-auto pb-12">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300">
-                Scrutiny Active
-              </span>
-              <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900">
-                Scrutiny Committee Worklist &amp; Checklist Engine
-              </h2>
+        <PageHeader
+          title="Scrutiny Committee Worklist"
+          subtitle="Statutory document verification and deficiency management under AICTE APH Chapter II."
+          badge="Scrutiny Active"
+          badgeTone="amber"
+          actions={
+            <div className="text-xs text-slate-500 font-mono bg-white px-3 py-1.5 rounded-lg border border-slate-200">
+              Active Queue: <strong className="text-slate-900">{worklist.length} Applications</strong>
             </div>
-            <p className="text-xs text-slate-500 mt-1">
-              Statutory Document Verification under Approval Process Handbook 2026-27 (15-Day Maximum Turnaround)
-            </p>
-          </div>
-
-          <div className="text-xs text-slate-500 font-mono">
-            Queue: <strong className="text-slate-900">{worklist.length} Applications</strong>
-          </div>
-        </div>
+          }
+        />
 
         {/* Worklist Table */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
-          <div className="p-4 sm:p-5 border-b border-slate-200 bg-slate-50/70 flex items-center justify-between">
-            <h3 className="text-sm font-bold text-slate-900">Assigned Application Dossiers</h3>
-            <span className="text-xs text-slate-500 font-mono">{worklist.length} in Active Queue</span>
+        <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
+          <div className="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/60 flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">Assigned Application Dossiers</h3>
+              <p className="text-xs text-slate-500 mt-0.5">Prioritized by SLA submission age and statutory deadline</p>
+            </div>
+            <span className="text-xs text-slate-500 font-mono">{worklist.length} Cases Monitored</span>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="bg-slate-100/70 text-slate-600 font-semibold uppercase text-[10px] border-b border-slate-200">
+                <tr className="bg-slate-50 text-slate-600 font-semibold uppercase text-[10px] tracking-wider border-b border-slate-200">
                   <th className="py-3 px-4">Application ID</th>
                   <th className="py-3 px-4">Technical Institute</th>
                   <th className="py-3 px-4">Route &amp; Discipline</th>

@@ -92,12 +92,12 @@ export function AdminHeader({
   };
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 sm:px-6 bg-white/95 backdrop-blur-md border-b border-slate-200">
+    <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 sm:px-6 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-2xs">
       {/* Left: Mobile Menu + Dynamic Role Title */}
       <div className="flex items-center gap-3 sm:gap-4">
         <button
           onClick={onOpenMobileMenu}
-          className="p-2 -ml-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 lg:hidden focus:outline-none focus:ring-2 focus:ring-teal-500"
+          className="p-2 -ml-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 lg:hidden focus:outline-none focus:ring-2 focus:ring-[#0B1F36]"
           aria-label="Open sidebar"
         >
           <MenuIcon className="w-5 h-5" />
@@ -105,14 +105,14 @@ export function AdminHeader({
 
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900">
+            <h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900">
               {branding.title}
             </h1>
-            <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-teal-50 text-teal-700 border border-teal-200">
+            <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[#0B1F36]/5 text-[#0B1F36] border border-[#0B1F36]/15 uppercase tracking-wide">
               {branding.badge}
             </span>
           </div>
-          <p className="text-xs text-slate-500 hidden md:block">
+          <p className="text-[11px] text-slate-500 hidden md:block">
             {branding.subtitle}
           </p>
         </div>
@@ -125,7 +125,7 @@ export function AdminHeader({
           <input
             type="search"
             placeholder="Search Application ID, Permanent Institute ID, or Officer..."
-            className="w-full pl-9 pr-4 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white text-slate-900 placeholder-slate-400 transition-all"
+            className="w-full pl-9 pr-4 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0B1F36] focus:bg-white text-slate-900 placeholder-slate-400 transition-all"
           />
         </div>
       </div>

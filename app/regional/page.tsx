@@ -5,6 +5,7 @@ import { AccessDeniedView } from "@/components/auth/AccessDeniedView";
 import { RoleDashboardShell } from "@/components/navigation/RoleDashboardShell";
 import { createServerClient } from "@/lib/supabase/server";
 import { ArrowRightIcon } from "@/components/admin/Icons";
+import { PageHeader } from "@/components/ui/PageHeader";
 
 export const metadata = {
   title: "Regional Directorate Dashboard | AICTE SAKSHAM",
@@ -93,49 +94,40 @@ async function RegionalDashboardContent() {
       userRole={user?.role || "regional_officer"}
       fullName={user?.fullName || "Regional Officer"}
     >
-      <div className="space-y-6">
-        {/* Banner */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200">
-                Jurisdiction Active
+      <div className="space-y-6 max-w-7xl mx-auto pb-12">
+        <PageHeader
+          title="Regional Directorate Command Portal"
+          subtitle={`${regionName} • Statutory Scrutiny & Inspection Oversight under AICTE Regulations.`}
+          badge="Jurisdiction Active"
+          badgeTone="navy"
+          actions={
+            isDemo ? (
+              <span className="text-[10px] font-semibold uppercase px-2.5 py-1 rounded bg-slate-100 text-slate-500 border border-slate-200">
+                Sample Regional Ledger
               </span>
-              <h2 className="text-xl font-bold tracking-tight text-slate-900">
-                Regional Directorate Command Portal
-              </h2>
-            </div>
-            <p className="text-xs text-slate-500 mt-1">
-              {regionName} &bull; Statutory Scrutiny &amp; Inspection Oversight
-            </p>
-          </div>
-
-          {isDemo && (
-            <span className="text-[10px] font-semibold uppercase px-2 py-1 rounded bg-slate-100 text-slate-500 border border-slate-200 self-start sm:self-auto">
-              Sample Regional Ledger
-            </span>
-          )}
-        </div>
+            ) : undefined
+          }
+        />
 
         {/* Quick KPI stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
-            <span className="text-[10px] font-bold uppercase text-slate-400">Jurisdiction Applications</span>
-            <div className="text-2xl font-black text-slate-900 mt-1">{regionalApps.length}</div>
+          <div className="p-4 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Jurisdiction Applications</span>
+            <div className="text-2xl font-bold text-slate-900 mt-1">{regionalApps.length}</div>
             <p className="text-[11px] text-slate-500 mt-0.5">Statutory files in regional jurisdiction</p>
           </div>
 
-          <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
-            <span className="text-[10px] font-bold uppercase text-slate-400">Under Scrutiny</span>
-            <div className="text-2xl font-black text-amber-600 mt-1">
+          <div className="p-4 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Under Scrutiny</span>
+            <div className="text-2xl font-bold text-amber-700 mt-1">
               {regionalApps.filter((a) => a.status === "under_scrutiny").length}
             </div>
             <p className="text-[11px] text-slate-500 mt-0.5">Assigned to regional scrutiny panels</p>
           </div>
 
-          <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
-            <span className="text-[10px] font-bold uppercase text-slate-400">EVC Visits Active</span>
-            <div className="text-2xl font-black text-cyan-700 mt-1">
+          <div className="p-4 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">EVC Visits Active</span>
+            <div className="text-2xl font-bold text-teal-700 mt-1">
               {regionalApps.filter((a) => a.status === "evc_scheduled").length}
             </div>
             <p className="text-[11px] text-slate-500 mt-0.5">On-site expert inspections</p>
@@ -143,20 +135,19 @@ async function RegionalDashboardContent() {
         </div>
 
         {/* Jurisdiction Applications List */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
-          <div className="p-4 sm:p-5 border-b border-slate-200 bg-slate-50/70 flex items-center justify-between">
-            <h3 className="text-sm font-bold text-slate-900">
-              Regional Application Dossiers
-            </h3>
-            <span className="text-xs text-slate-500">
-              Filtered strictly by Regional RLS Boundary
-            </span>
+        <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
+          <div className="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/60 flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">Regional Application Dossiers</h3>
+              <p className="text-xs text-slate-500 mt-0.5">Filtered strictly by Regional RLS Boundary</p>
+            </div>
+            <span className="text-xs text-slate-500 font-mono">{regionalApps.length} dossiers</span>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="bg-slate-100/70 text-slate-600 font-semibold uppercase text-[10px] border-b border-slate-200">
+                <tr className="bg-slate-50 text-slate-600 font-semibold uppercase text-[10px] tracking-wider border-b border-slate-200">
                   <th className="py-3 px-4">Application ID</th>
                   <th className="py-3 px-4">Technical Institute</th>
                   <th className="py-3 px-4">Stage</th>

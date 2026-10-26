@@ -179,28 +179,28 @@ async function InstitutionContent() {
     >
       <div className="space-y-6 max-w-7xl mx-auto pb-12">
         {/* Top Banner with Action CTA */}
-        <div className="bg-gradient-to-r from-teal-900 via-slate-900 to-indigo-950 text-white rounded-2xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
+        <div className="bg-[#0B1F36] text-white rounded-xl p-6 sm:p-7 shadow-xs relative overflow-hidden border border-[#142D4E]">
           <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-            <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-400/30 text-[10px] font-bold uppercase tracking-wider">
-                <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-ping" />
+            <div className="space-y-1.5">
+              <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-white/10 text-teal-300 border border-white/15 text-[10px] font-bold uppercase tracking-wider">
+                <span className="w-1.5 h-1.5 rounded-full bg-teal-400" />
                 AY 2026-2027 Approval Cycle Active
               </div>
-              <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-                Statutory Approval &amp; Compliance Portal
+              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+                Technical Institution Docket
               </h2>
               <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
-                {institutionName} &bull; National AICTE Institutional Docket &bull; Submit Extension of Approval (EoA), New Technical Program additions, and respond to regulatory deficiency notices.
+                {institutionName} &bull; Manage statutory Extension of Approval (EoA), New Technical Program additions, and regulatory deficiency replies.
               </p>
             </div>
 
             <div className="shrink-0 flex flex-col sm:flex-row gap-3">
               <Link
                 href="/institution/applications/new"
-                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs sm:text-sm font-black transition-all shadow-lg hover:shadow-teal-500/25 active:scale-98"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-xs sm:text-sm font-bold transition-all shadow-xs"
               >
                 <span>+ Submit New Application</span>
-                <ArrowRightIcon className="w-4 h-4 text-slate-950" />
+                <ArrowRightIcon className="w-4 h-4 text-white" />
               </Link>
             </div>
           </div>
@@ -209,30 +209,30 @@ async function InstitutionContent() {
         {/* Quick Statutory Metrics */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
-            <span className="text-[10px] font-bold uppercase text-slate-400 block">Total Dockets</span>
-            <div className="text-2xl font-black text-slate-900 mt-1">{applications.length}</div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">Total Dockets</span>
+            <div className="text-2xl font-bold text-slate-900 mt-1">{applications.length}</div>
             <span className="text-[10px] text-slate-500 mt-0.5 block">National Registry</span>
           </div>
 
           <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
-            <span className="text-[10px] font-bold uppercase text-slate-400 block">Active In Scrutiny</span>
-            <div className="text-2xl font-black text-blue-700 mt-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">Active In Scrutiny</span>
+            <div className="text-2xl font-bold text-blue-700 mt-1">
               {applications.filter((a) => a.status === "under_scrutiny" || a.status === "submitted").length}
             </div>
             <span className="text-[10px] text-blue-600 mt-0.5 block">Under Regional Review</span>
           </div>
 
           <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
-            <span className="text-[10px] font-bold uppercase text-slate-400 block">Pending Council Decision</span>
-            <div className="text-2xl font-black text-purple-700 mt-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">Pending Council Review</span>
+            <div className="text-2xl font-bold text-purple-700 mt-1">
               {applications.filter((a) => a.status === "council_decision_pending").length}
             </div>
             <span className="text-[10px] text-purple-600 mt-0.5 block">Executive Council Review</span>
           </div>
 
           <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
-            <span className="text-[10px] font-bold uppercase text-slate-400 block">Draft Applications</span>
-            <div className="text-2xl font-black text-amber-700 mt-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">Draft Applications</span>
+            <div className="text-2xl font-bold text-amber-700 mt-1">
               {applications.filter((a) => a.isDraft).length}
             </div>
             <span className="text-[10px] text-amber-600 mt-0.5 block">Ready for Submission</span>

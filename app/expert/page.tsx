@@ -3,7 +3,9 @@ import Link from "next/link";
 import { getCurrentUserContext } from "@/lib/authContext";
 import { AccessDeniedView } from "@/components/auth/AccessDeniedView";
 import { RoleDashboardShell } from "@/components/navigation/RoleDashboardShell";
+import { getComplianceMonitoringData } from "@/lib/complianceEngine";
 import { ArrowRightIcon } from "@/components/admin/Icons";
+import { PageHeader } from "@/components/ui/PageHeader";
 
 export const metadata = {
   title: "EVC Expert Panel Dashboard | AICTE SAKSHAM",
@@ -38,24 +40,21 @@ async function ExpertContent() {
     );
   }
 
-  const visits = [
-    {
-      id: "evc-1",
-      applicationNumber: "AICTE-2026-MGMT-00088",
-      institutionName: "T.A. Pai Management Institute",
-      scheduledDate: "2026-11-04 (10:00 AM IST)",
-      panelRole: "Lead Expert / Chairman",
-      status: "scheduled",
-    },
-    {
-      id: "evc-2",
-      applicationNumber: "AICTE-2026-ENGG-00124",
-      institutionName: "K.J. Somaiya College of Engineering",
-      scheduledDate: "2026-10-18 (Completed)",
-      panelRole: "Committee Member (AI/Data Science)",
-      status: "report_submitted",
-    },
-  ];
+  const { evcItems, isDemo } = await getComplianceMonitoringData();
+
+  const visits = evcItems.map((item) => ({
+    id: item.id,
+    applicationId: item.applicationId,
+    applicationNumber: item.applicationNumber,
+    institutionName: item.institutionName,
+    scheduledDate: new Date(item.scheduledStart).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }) + " (" + (item.status === "verified" || item.status === "report_submitted" ? "Completed" : "Scheduled") + ")",
+    panelRole: item.leadExpertName ? `Lead: ${item.leadExpertName}` : "Lead Expert / Panelist",
+    status: item.status,
+  }));
 
   return (
     <RoleDashboardShell
@@ -63,31 +62,32 @@ async function ExpertContent() {
       userRole={user?.role || "evc_expert"}
       fullName={user?.fullName || "Prof. Senior Expert"}
     >
-      <div className="space-y-6">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-cyan-100 text-cyan-800 border border-cyan-300">
-              Expert Panelist Active
-            </span>
-            <h2 className="text-xl font-bold tracking-tight text-slate-900">
-              Expert Visiting Committee (EVC) Dossier
-            </h2>
-          </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Assigned physical inspections and geotagged photographic report submissions
-          </p>
-        </div>
+      <div className="space-y-6 max-w-7xl mx-auto pb-12">
+        <PageHeader
+          title="Expert Visiting Committee (EVC) Dossier"
+          subtitle="Peer-review on-site inspections, geotagged infrastructure validation, and confidential statutory reporting."
+          badge="Expert Panelist Active"
+          badgeTone="teal"
+          actions={
+            <div className="text-xs text-slate-500 font-mono bg-white px-3 py-1.5 rounded-lg border border-slate-200">
+              Assigned Visits: <strong className="text-slate-900">{visits.length}</strong>
+            </div>
+          }
+        />
 
-        <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
-          <div className="p-4 sm:p-5 border-b border-slate-200 bg-slate-50/70 flex items-center justify-between">
-            <h3 className="text-sm font-bold text-slate-900">My Appointed Inspection Visits</h3>
-            <span className="text-xs text-slate-500 font-mono">Protected by Expert Assignment Trigger</span>
+        <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
+          <div className="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/60 flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">My Appointed Inspection Visits</h3>
+              <p className="text-xs text-slate-500 mt-0.5">Physical infrastructure and compliance assessment</p>
+            </div>
+            <span className="text-xs text-slate-500 font-mono">Expert Assignment Protected</span>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="bg-slate-100/70 text-slate-600 font-semibold uppercase text-[10px] border-b border-slate-200">
+                <tr className="bg-slate-50 text-slate-600 font-semibold uppercase text-[10px] tracking-wider border-b border-slate-200">
                   <th className="py-3 px-4">Application</th>
                   <th className="py-3 px-4">Technical Institute</th>
                   <th className="py-3 px-4">Inspection Date</th>
@@ -118,7 +118,7 @@ async function ExpertContent() {
                     </td>
                     <td className="py-3.5 px-4 text-right">
                       <Link
-                        href={`/expert/applications/${v.id}`}
+                        href={`/expert/applications/${v.applicationId || v.id}`}
                         className="inline-flex items-center gap-1 font-bold text-teal-600 hover:text-teal-700"
                       >
                         <span>Inspection Dossier</span>
