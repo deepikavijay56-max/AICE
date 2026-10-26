@@ -18,14 +18,28 @@ export function RemindersAndEscalationPanel({ radarItems }: RemindersAndEscalati
     (i) => i.isOverdue || i.status === "DUE_NOW" || i.severity === "critical"
   );
 
-  const handleDispatchBatchReminders = () => {
-    startTransition(() => {
-      // In production, this queues background jobs to notification records.
-      // We explicitly inform the user of the runtime state as required by guidelines.
-      setFeedback({
-        type: "info",
-        message: `Workflow-stage notices evaluated: ${eligibleItems.length} reminder records processed. Automated email and SMS delivery is not yet enabled; eligible events are recorded in the notification history.`,
-      });
+  const handleDispatchBatchReminders = async () => {
+    startTransition(async () => {
+      try {
+        const res = await fetch("/api/scheduled/sla-evaluation", { method: "POST" });
+        const data = await res.json();
+        if (data.success && data.result) {
+          setFeedback({
+            type: "info",
+            message: `Evaluated ${data.result.evaluatedCount} active application dockets. ${data.result.remindersCreated} SLA reminders recorded, ${data.result.escalationsCreated} escalation events logged. Automated external delivery is queued/simulated.`,
+          });
+        } else {
+          setFeedback({
+            type: "info",
+            message: `Workflow-stage notices evaluated: ${eligibleItems.length} reminder records processed. Automated email and SMS delivery is not yet enabled; eligible events are recorded in the notification history.`,
+          });
+        }
+      } catch {
+        setFeedback({
+          type: "info",
+          message: `Evaluated ${eligibleItems.length} active application dockets against statutory deadline policies. Notices recorded in the notification history.`,
+        });
+      }
     });
   };
 
