@@ -27,7 +27,7 @@ export async function reviewComplianceSubmission(
   if (!UUID_REGEX.test(submissionId)) {
     return {
       success: true,
-      message: `[Demonstration Mode] Compliance submission ${submissionId} marked as ${decision.toUpperCase()}. Note: In production mode with Supabase connection, this executes PostgreSQL row-level verification.`,
+      message: `[Demonstration Mode] Compliance submission ${submissionId} marked as ${decision.toUpperCase()}. In production mode, this records the verified determination in the statutory registry.`,
     };
   }
 

@@ -146,7 +146,7 @@ export default function LoginPage() {
               Authorized regulatory personnel and technical institute applicants only.
             </p>
             <p className="text-[11px] text-slate-400">
-              Session communications protected with TLS 1.3 &bull; PostgreSQL Multi-Tenant RLS Boundaries
+              Session communications protected with TLS 1.3 &bull; Statutory Multi-Tenant Security Standards
             </p>
           </footer>
         </div>

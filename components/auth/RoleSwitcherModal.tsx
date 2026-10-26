@@ -114,7 +114,7 @@ export function RoleSwitcherModal() {
       <div className="pt-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-t border-slate-100">
         <div className="text-[11px] text-slate-500 flex items-center gap-1.5">
           <ShieldCheckIcon className="w-4 h-4 text-teal-600 shrink-0" />
-          <span>Role verified server-side against PostgreSQL public.profiles</span>
+          <span>Role verified server-side against authorized user profile</span>
         </div>
 
         <button

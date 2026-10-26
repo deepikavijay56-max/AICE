@@ -72,7 +72,7 @@ async function InstitutionContent() {
             </h2>
           </div>
           <p className="text-xs text-slate-500 mt-1">
-            {institutionName} &bull; Protected under PostgreSQL Multi-Tenant Isolation
+            {institutionName} &bull; Protected under Statutory Institutional Isolation
           </p>
         </div>
 

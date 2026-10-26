@@ -71,7 +71,7 @@ export async function advanceApplicationStatus(
       // If it's a demo application ID not present in DB
       return {
         success: true,
-        message: `[Simulated Workflow] Transitioned application ${applicationId} to "${targetStatus}". Note: In real mode, this executes the PostgreSQL integrity trigger.`,
+        message: `[Demonstration Workflow] Transitioned application ${applicationId} to "${targetStatus}". In production mode, this records the transition in the statutory ledger.`,
       };
     }
 

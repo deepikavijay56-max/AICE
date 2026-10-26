@@ -225,7 +225,7 @@ async function RolesDirectoryContent() {
           <div>
             <h4 className="font-bold text-slate-900">Server-Side Profile &amp; Role Enforcement</h4>
             <p className="text-[11px] text-slate-600 mt-0.5 leading-relaxed">
-              In accordance with AICTE data security standards, role assignment is resolved strictly from the authenticated session profile in PostgreSQL <code className="text-blue-700 font-semibold">public.profiles</code>. Direct URL modifications or client-side role toggling are strictly rejected by the server.
+              In accordance with AICTE data security standards, role assignment is resolved strictly from the authenticated session profile in the authorized user registry. Direct URL modifications or client-side role toggling are strictly rejected by the server.
             </p>
           </div>
         </div>

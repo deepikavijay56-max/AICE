@@ -71,18 +71,18 @@ export default function SettingsPage() {
         <div className="p-6 bg-white rounded-xl border border-slate-200 shadow-xs space-y-4">
           <div className="border-b border-slate-100 pb-3">
             <h3 className="text-sm font-bold text-slate-900">
-              Database Security & Row-Level Authorization Status
+              Statutory Security &amp; Tenant Authorization Status
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
-              Current security posture based on applied migrations and PostgreSQL policies
+              Current security posture based on regulatory access policies
             </p>
           </div>
 
           <div className="space-y-3">
             {[
               {
-                title: "PostgreSQL Row Level Security (RLS)",
-                desc: "Enforced across all 15 core tables. Service-role bypass prohibited in browser.",
+                title: "Statutory Multi-Tenant Data Isolation",
+                desc: "Enforced across all core regulatory entities. Unauthorized cross-tenant access prohibited.",
                 status: "Enforced",
               },
               {

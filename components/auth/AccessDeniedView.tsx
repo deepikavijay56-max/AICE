@@ -45,7 +45,7 @@ export function AccessDeniedView({
             <span>AICTE Statutory Data Isolation</span>
           </div>
           <p className="text-[10px] text-slate-500">
-            PostgreSQL Row Level Security (RLS) strictly segregates institution dossiers, regional jurisdictions, and EVC assignments.
+            Statutory role-based access control strictly segregates institution dossiers, regional jurisdictions, and committee assignments.
           </p>
         </div>
 

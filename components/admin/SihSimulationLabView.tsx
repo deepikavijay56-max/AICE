@@ -393,7 +393,7 @@ export function SihSimulationLabView() {
                   {isOverdue ? "Escalate to Bureau / Officer" : "Issue Scrutiny Decision Order"}
                 </p>
                 <p className="text-[11px] text-slate-500 mt-1">
-                  Validated against PostgreSQL integrity trigger.
+                  Validated against statutory workflow state rules.
                 </p>
               </div>
             </div>

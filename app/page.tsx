@@ -154,7 +154,7 @@ export default function HomePage() {
               <div className="p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-xs">
                 <div className="text-2xl font-black text-teal-300">Full Audit</div>
                 <div className="text-xs font-semibold text-slate-200 mt-1">Immutable Ledger</div>
-                <div className="text-[11px] text-slate-400 mt-0.5">PostgreSQL trigger tracking</div>
+                <div className="text-[11px] text-slate-400 mt-0.5">Statutory action tracking</div>
               </div>
             </div>
           </div>
@@ -233,7 +233,7 @@ export default function HomePage() {
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed">
                 Transparent rules-based deadline radar quoting governing APH regulations. 
-                PostgreSQL triggers log every action immutably to the Case Flight Recorder.
+                Automated regulatory tracking logs every action immutably to the Case Flight Recorder.
               </p>
               <ul className="text-xs text-slate-700 space-y-2 pt-3 border-t border-slate-100 font-medium">
                 <li className="flex items-center gap-2">
@@ -242,7 +242,7 @@ export default function HomePage() {
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircleIcon className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>Zero-Trust PostgreSQL Row Level Security</span>
+                  <span>Zero-Trust Multi-Tenant Isolation</span>
                 </li>
               </ul>
             </div>

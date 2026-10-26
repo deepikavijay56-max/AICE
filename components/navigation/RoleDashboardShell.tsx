@@ -49,7 +49,7 @@ export function RoleDashboardShell({
           <div className="flex items-center gap-2 text-[11px] text-slate-400 font-mono">
             <span>Role: {userRole}</span>
             <span>&bull;</span>
-            <span className="text-teal-700 font-semibold">PostgreSQL RLS Active</span>
+            <span className="text-teal-700 font-semibold">Statutory Multi-Tenant Security Active</span>
           </div>
         </footer>
       </div>

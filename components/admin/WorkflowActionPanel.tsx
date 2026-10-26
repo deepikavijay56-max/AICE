@@ -198,7 +198,7 @@ export function WorkflowActionPanel({
               Statutory Workflow Transition Gate
             </h3>
             <p className="text-[11px] text-slate-500">
-              Authorized actions governed by PostgreSQL integrity trigger for {applicationNumber}
+              Authorized actions governed by statutory approval process rules for {applicationNumber}
             </p>
           </div>
         </div>
@@ -253,7 +253,7 @@ export function WorkflowActionPanel({
               {currentStatus === "council_decision_pending" && " Executive Council Approval Bureau is convening for final statutory determination."}
             </p>
             <div className="text-[11px] text-amber-700/90 pt-1 font-mono">
-              Enforced by: PostgreSQL Trigger enforce_application_integrity()
+              Enforced by: Statutory Workflow Integrity Rule
             </div>
           </div>
         ) : (

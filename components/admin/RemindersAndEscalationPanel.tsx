@@ -20,11 +20,11 @@ export function RemindersAndEscalationPanel({ radarItems }: RemindersAndEscalati
 
   const handleDispatchBatchReminders = () => {
     startTransition(() => {
-      // In production, this queues background jobs to notification_events table.
+      // In production, this queues background jobs to notification records.
       // We explicitly inform the user of the runtime state as required by guidelines.
       setFeedback({
         type: "info",
-        message: `Evaluation completed: ${eligibleItems.length} stage notices evaluated against database ledger. Note: AICTE Background Worker (pg_cron / Supabase Edge Worker) is pending deployment to dispatch outbound SMTP/SMS gateways. All eligible events are flagged in the regulatory ledger.`,
+        message: `Workflow-stage notices evaluated: ${eligibleItems.length} reminder records processed. Automated email and SMS delivery is not yet enabled; eligible events are recorded in the notification history.`,
       });
     });
   };
@@ -35,10 +35,10 @@ export function RemindersAndEscalationPanel({ radarItems }: RemindersAndEscalati
         <div>
           <h3 className="text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
             <ShieldCheckIcon className="w-4 h-4 text-teal-600" />
-            Duplicate-Safe Escalation Ledger & Reminder Engine
+            Escalation &amp; Reminder Management
           </h3>
           <p className="text-xs text-slate-500 mt-0.5">
-            Idempotent alert dispatching based on public.notification_events & public.escalations
+            Automated statutory alerts, stage reminders, and regional escalation records
           </p>
         </div>
 
