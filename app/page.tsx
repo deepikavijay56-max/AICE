@@ -1,197 +1,229 @@
-import { Suspense } from "react";
-import { createClient } from "@/lib/supabase/server";
+import React, { Suspense } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { getCurrentUserContext } from "@/lib/authContext";
+import { ROLE_HOME_ROUTES } from "@/lib/authConstants";
+import {
+  ShieldCheckIcon,
+  WorkflowIcon,
+  OverviewIcon,
+  AuditIcon,
+  ArrowRightIcon,
+  CheckCircleIcon,
+} from "@/components/admin/Icons";
 
-async function SupabaseStatusSection() {
-  let connection: {
-    connected: boolean;
-    configured: boolean;
-    message: string;
-  };
+export const metadata = {
+  title: "AICTE SAKSHAM | Smart Approval, Compliance, Scheduling & Handling Automation",
+  description:
+    "AICTE SAKSHAM — Smart Approval, Compliance, Scheduling, and Handling Automation Management System. Empowering Institutions. Streamlining Approvals.",
+};
 
-  try {
-    const supabase = await createClient();
-    const { error } = await supabase.auth.getSession();
-    if (error) {
-      connection = {
-        connected: false,
-        configured: true,
-        message: `Supabase auth service notice: ${error.message}`,
-      };
-    } else {
-      connection = {
-        connected: true,
-        configured: true,
-        message: "Connected to Supabase client safely with RLS policies enabled.",
-      };
-    }
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown connection failure";
-    const isUnconfigured =
-      message.includes("NEXT_PUBLIC_SUPABASE_URL") ||
-      message.includes("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY");
+async function NavAuthControl() {
+  const currentUser = await getCurrentUserContext();
 
-    connection = {
-      connected: false,
-      configured: !isUnconfigured,
-      message,
-    };
+  if (currentUser?.isAuthenticated) {
+    return (
+      <Link
+        href={ROLE_HOME_ROUTES[currentUser.role] || "/admin"}
+        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition-colors shadow-xs"
+      >
+        <span>Go to Workspace ({currentUser.role})</span>
+        <ArrowRightIcon className="w-3.5 h-3.5" />
+      </Link>
+    );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-300">
-          Supabase Initial Integration Status
-        </h2>
-        <a
-          href="/api/health/supabase"
-          target="_blank"
-          rel="noreferrer"
-          className="text-xs text-indigo-400 hover:text-indigo-300 hover:underline font-mono"
-        >
-          View API Health Route &rarr;
-        </a>
-      </div>
-
-      <div
-        className={`p-4 rounded-lg border text-sm font-mono flex flex-col gap-2 ${
-          connection.connected
-            ? "bg-emerald-950/30 border-emerald-800/50 text-emerald-200"
-            : connection.configured
-            ? "bg-amber-950/30 border-amber-800/50 text-amber-200"
-            : "bg-rose-950/30 border-rose-800/50 text-rose-200"
-        }`}
-      >
-        <div className="flex items-center justify-between font-semibold">
-          <span>Status: {connection.connected ? "Connected" : "Check Notice"}</span>
-          <span className="text-xs opacity-75">Checked server-side</span>
-        </div>
-        <p className="text-xs break-words leading-relaxed whitespace-pre-wrap">
-          {connection.message}
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-        <div className="p-3 rounded-lg bg-zinc-900 border border-zinc-800 text-xs">
-          <span className="text-zinc-500 block mb-1">Browser Client</span>
-          <span className="font-mono text-zinc-200">@/lib/supabase/client</span>
-        </div>
-        <div className="p-3 rounded-lg bg-zinc-900 border border-zinc-800 text-xs">
-          <span className="text-zinc-500 block mb-1">Server Client</span>
-          <span className="font-mono text-zinc-200">@/lib/supabase/server</span>
-        </div>
-        <div className="p-3 rounded-lg bg-zinc-900 border border-zinc-800 text-xs">
-          <span className="text-zinc-500 block mb-1">Session Middleware</span>
-          <span className="font-mono text-zinc-200">@/middleware.ts</span>
-        </div>
-      </div>
-    </div>
+    <Link
+      href="/login"
+      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition-colors shadow-xs"
+    >
+      <span>Institutional Sign In</span>
+      <ArrowRightIcon className="w-3.5 h-3.5" />
+    </Link>
   );
 }
 
-function StatusSkeleton() {
+export default function HomePage() {
   return (
-    <div className="animate-pulse space-y-4">
-      <div className="h-4 bg-zinc-800 rounded w-1/3"></div>
-      <div className="h-20 bg-zinc-800/50 rounded-lg"></div>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="h-16 bg-zinc-800/40 rounded-lg"></div>
-        <div className="h-16 bg-zinc-800/40 rounded-lg"></div>
-        <div className="h-16 bg-zinc-800/40 rounded-lg"></div>
-      </div>
-    </div>
-  );
-}
-
-export default function Home() {
-  return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col justify-between p-6 sm:p-12 font-sans selection:bg-indigo-500 selection:text-white">
-      <div className="max-w-4xl mx-auto w-full space-y-8 pt-6">
-        {/* Header */}
-        <header className="border-b border-zinc-800 pb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3">
-              <span className="inline-flex items-center justify-center h-8 px-2.5 rounded-md bg-indigo-600/20 text-indigo-400 font-mono text-xs uppercase tracking-wider font-semibold border border-indigo-500/30">
+    <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col justify-between selection:bg-blue-500 selection:text-white">
+      {/* Top Government Navigation Bar */}
+      <header className="border-b border-slate-800 bg-slate-950/90 backdrop-blur-md sticky top-0 z-30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="relative w-10 h-10 shrink-0 rounded-lg overflow-hidden bg-white/10 p-0.5 border border-white/20 shadow-xs flex items-center justify-center">
+              <Image
+                src="/saksham-logo.png"
+                alt="AICTE SAKSHAM"
+                width={40}
+                height={40}
+                className="w-full h-full object-contain"
+                priority
+              />
+            </div>
+            <div>
+              <span className="text-sm font-extrabold text-white tracking-wider block">
                 AICTE SAKSHAM
               </span>
-              <span className="text-xs text-zinc-400 font-mono">v0.1.0</span>
+              <span className="text-[10px] text-blue-300 font-mono font-medium uppercase tracking-wider block">
+                Smart Approval, Compliance, Scheduling &amp; Handling Automation
+              </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white mt-2">
-              Approval Workflow & Compliance Monitoring
-            </h1>
-            <p className="text-sm text-zinc-400 mt-1">
-              Next.js 16 App Router + Supabase SSR Integration
-            </p>
           </div>
 
-          <div className="flex items-center gap-3">
-            <a
-              href="/admin"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold tracking-wide uppercase shadow-sm transition-colors"
+          <nav className="flex items-center gap-3">
+            <Link
+              href="/roles"
+              className="hidden sm:inline-flex text-xs font-semibold text-slate-300 hover:text-white px-3 py-1.5 rounded-lg hover:bg-slate-800/60 transition-colors"
             >
-              <span>Launch Council Admin Portal</span>
-              <span>&rarr;</span>
-            </a>
-          </div>
-        </header>
+              Supported Roles
+            </Link>
+            <Suspense
+              fallback={
+                <Link
+                  href="/login"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-teal-600/80 text-white font-bold text-xs"
+                >
+                  <span>Sign In</span>
+                  <ArrowRightIcon className="w-3.5 h-3.5" />
+                </Link>
+              }
+            >
+              <NavAuthControl />
+            </Suspense>
+          </nav>
+        </div>
+      </header>
 
-        {/* Integration Status Card */}
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-6 backdrop-blur">
-          <Suspense fallback={<StatusSkeleton />}>
-            <SupabaseStatusSection />
-          </Suspense>
+      {/* Hero Section */}
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 flex flex-col justify-center">
+        <div className="text-center max-w-3xl mx-auto space-y-6">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-950/80 border border-blue-800/60 text-blue-300 text-xs font-mono">
+            <ShieldCheckIcon className="w-3.5 h-3.5 text-blue-400" />
+            <span>AICTE SAKSHAM &bull; Smart India Hackathon 2026 &bull; PS 26262</span>
+          </div>
+
+          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+            Empowering Institutions. <br />
+            <span className="text-blue-400">Streamlining Approvals.</span>
+          </h1>
+
+          <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl mx-auto">
+            <strong className="text-white">Smart Approval, Compliance, Scheduling, and Handling Automation Management System.</strong>{" "}
+            A next-generation statutory governance engine automating technical college clearances,
+            scrutiny turnaround tracking, geotagged EVC inspections, and immutable audit trails across
+            all AICTE regional directorates.
+          </p>
+
+          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link
+              href="/login"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs sm:text-sm transition-colors shadow-sm shadow-blue-950"
+            >
+              <span>Access Institutional Portal</span>
+              <ArrowRightIcon className="w-4 h-4" />
+            </Link>
+
+            <Link
+              href="/roles"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-slate-800/90 hover:bg-slate-800 text-slate-200 border border-slate-700 font-semibold text-xs sm:text-sm transition-colors"
+            >
+              <span>Explore Role Matrix</span>
+            </Link>
+          </div>
         </div>
 
-        {/* Security & Architecture Highlights */}
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-6 space-y-4">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-300">
-            Security & Compliance Baseline
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-zinc-400">
-            <div className="flex items-start gap-3">
-              <div className="w-5 h-5 rounded-full bg-emerald-900/40 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                ✓
-              </div>
-              <div>
-                <strong className="text-zinc-200 block">Row Level Security (RLS) Safe:</strong>
-                No policies are loosened or bypassed; service_role credentials are kept strictly out of client bundles.
-              </div>
+        {/* Core Pillars Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 sm:mt-24">
+          <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-6 space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center font-bold">
+              <WorkflowIcon className="w-5 h-5" />
             </div>
-            <div className="flex items-start gap-3">
-              <div className="w-5 h-5 rounded-full bg-emerald-900/40 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                ✓
-              </div>
-              <div>
-                <strong className="text-zinc-200 block">Next.js App Router Cookies:</strong>
-                Supports async cookie stores in Next.js 16 with automatic session refresh handling in middleware.
-              </div>
+            <h3 className="text-sm font-bold text-white tracking-tight">
+              Configurable Workflow Routing
+            </h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Enforces strict state transitions from scrutiny allocation to executive council sanction
+              under Approval Process Handbook 2026-27 norms.
+            </p>
+            <ul className="text-[11px] text-slate-400 space-y-1 pt-1">
+              <li className="flex items-center gap-1.5">
+                <CheckCircleIcon className="w-3.5 h-3.5 text-teal-400" />
+                <span>15-Day Maximum Scrutiny Turnaround</span>
+              </li>
+              <li className="flex items-center gap-1.5">
+                <CheckCircleIcon className="w-3.5 h-3.5 text-teal-400" />
+                <span>Automated Deficiencies &amp; Clarifications</span>
+              </li>
+            </ul>
+          </div>
+
+          <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-6 space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center font-bold">
+              <OverviewIcon className="w-5 h-5" />
             </div>
-            <div className="flex items-start gap-3">
-              <div className="w-5 h-5 rounded-full bg-emerald-900/40 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                ✓
-              </div>
-              <div>
-                <strong className="text-zinc-200 block">Fail-Fast Environment Validation:</strong>
-                Clear error messages in development when required environment keys are missing or malformed.
-              </div>
+            <h3 className="text-sm font-bold text-white tracking-tight">
+              EVC Inspection &amp; Compliance Radar
+            </h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Real-time monitoring of Expert Visiting Committee physical audits with geotagged
+              photographic proof and verifiable legal undertakings.
+            </p>
+            <ul className="text-[11px] text-slate-400 space-y-1 pt-1">
+              <li className="flex items-center gap-1.5">
+                <CheckCircleIcon className="w-3.5 h-3.5 text-teal-400" />
+                <span>Rubric-based Infrastructure Scoring</span>
+              </li>
+              <li className="flex items-center gap-1.5">
+                <CheckCircleIcon className="w-3.5 h-3.5 text-teal-400" />
+                <span>SHA-256 Digital Undertaking Signatures</span>
+              </li>
+            </ul>
+          </div>
+
+          <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-6 space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center font-bold">
+              <AuditIcon className="w-5 h-5" />
             </div>
-            <div className="flex items-start gap-3">
-              <div className="w-5 h-5 rounded-full bg-emerald-900/40 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                ✓
-              </div>
-              <div>
-                <strong className="text-zinc-200 block">Ready for Schema Migrations:</strong>
-                Schema definitions and database tables can now be applied without breaking client or server contracts.
-              </div>
-            </div>
+            <h3 className="text-sm font-bold text-white tracking-tight">
+              Case Flight Recorder &amp; Security
+            </h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Every decision, document review, and status update is sealed into an immutable append-only
+              event stream with role-based access boundaries.
+            </p>
+            <ul className="text-[11px] text-slate-400 space-y-1 pt-1">
+              <li className="flex items-center gap-1.5">
+                <CheckCircleIcon className="w-3.5 h-3.5 text-teal-400" />
+                <span>PostgreSQL Row Level Security (RLS)</span>
+              </li>
+              <li className="flex items-center gap-1.5">
+                <CheckCircleIcon className="w-3.5 h-3.5 text-teal-400" />
+                <span>Zero-Trust Regional Data Boundaries</span>
+              </li>
+            </ul>
           </div>
         </div>
-      </div>
+      </main>
 
-      {/* Footer */}
-      <footer className="max-w-4xl mx-auto w-full border-t border-zinc-800/80 pt-6 mt-12 text-xs text-zinc-500 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-        <span>AICTE SAKSHAM Compliance Monitoring Platform</span>
-        <span>Ready for Database Schema &amp; Approval Workflows</span>
+      {/* Institutional Footer */}
+      <footer className="border-t border-slate-800 bg-slate-950/90 py-6 text-xs text-slate-500">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div>
+            <span className="font-bold text-slate-300">AICTE SAKSHAM</span> &mdash; Smart Approval, Compliance, Scheduling &amp; Handling Automation
+          </div>
+          <div className="flex items-center gap-4 text-slate-400 text-[11px]">
+            <Link href="/roles" className="hover:text-blue-400 transition-colors">
+              Role Matrix
+            </Link>
+            <span>&bull;</span>
+            <Link href="/diagnostics" className="hover:text-blue-400 transition-colors">
+              System Health
+            </Link>
+            <span>&bull;</span>
+            <span>Security Standard: ISO 27001 Aligned</span>
+          </div>
+        </div>
       </footer>
     </div>
   );

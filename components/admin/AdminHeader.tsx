@@ -29,7 +29,54 @@ export function AdminHeader({
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
 
-  const displayName = fullName || userEmail?.split("@")[0] || "Council Administrator";
+  // Compute role-tailored Portal branding and labels
+  const roleBranding: Record<string, { title: string; subtitle: string; badge: string; defaultName: string }> = {
+    council_admin: {
+      title: "Council Administration",
+      subtitle: "Statutory Approval, Regulatory Oversight & EVC Monitoring",
+      badge: "Council Secretariat",
+      defaultName: "Council Administrator",
+    },
+    regional_officer: {
+      title: "Regional Directorate",
+      subtitle: "Jurisdictional Case Pendency & Regional Scrutiny Oversight",
+      badge: "Regional Office",
+      defaultName: "Regional Officer",
+    },
+    scrutiny_officer: {
+      title: "Scrutiny Directorate",
+      subtitle: "Statutory Checklist Verification & Deficiency Management",
+      badge: "Scrutiny Panel",
+      defaultName: "Scrutiny Officer",
+    },
+    evc_expert: {
+      title: "Expert Visiting Committee",
+      subtitle: "Peer-Review Inspection & Geotagged Evidence Assessment",
+      badge: "EVC Panelist",
+      defaultName: "Expert Committee Member",
+    },
+    institution_admin: {
+      title: "Technical Institution Portal",
+      subtitle: "Statutory Approval Dossier, Deficiency Replies & Compliance",
+      badge: "Institute Directorate",
+      defaultName: "Institute Registrar",
+    },
+    institution_user: {
+      title: "Technical Institution Portal",
+      subtitle: "Statutory Approval Dossier, Deficiency Replies & Compliance",
+      badge: "Institute Applicant",
+      defaultName: "Institution User",
+    },
+    system_auditor: {
+      title: "System Audit Directorate",
+      subtitle: "Immutable Governance Ledger & Workflow Compliance Radar",
+      badge: "Statutory Auditor",
+      defaultName: "System Auditor",
+    },
+  };
+
+  const branding = roleBranding[userRole || "council_admin"] || roleBranding.council_admin;
+  const displayName = fullName || userEmail?.split("@")[0] || branding.defaultName;
   const displayRole = (userRole || "council_admin").replace(/_/g, " ").toUpperCase();
 
   const handleSignOut = async () => {
@@ -46,7 +93,7 @@ export function AdminHeader({
 
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 sm:px-6 bg-white/95 backdrop-blur-md border-b border-slate-200">
-      {/* Left: Mobile Menu + Title */}
+      {/* Left: Mobile Menu + Dynamic Role Title */}
       <div className="flex items-center gap-3 sm:gap-4">
         <button
           onClick={onOpenMobileMenu}
@@ -59,14 +106,14 @@ export function AdminHeader({
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900">
-              Council Administration
+              {branding.title}
             </h1>
             <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-teal-50 text-teal-700 border border-teal-200">
-              AICTE SAKSHAM
+              {branding.badge}
             </span>
           </div>
           <p className="text-xs text-slate-500 hidden md:block">
-            Statutory Approval, Regulatory Oversight & EVC Monitoring
+            {branding.subtitle}
           </p>
         </div>
       </div>

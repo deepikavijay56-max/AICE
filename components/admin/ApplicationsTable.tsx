@@ -22,33 +22,67 @@ export interface ApplicationRow {
 interface ApplicationsTableProps {
   initialApplications: ApplicationRow[];
   isDemo?: boolean;
+  detailBaseUrl?: string;
 }
 
 export function ApplicationsTable({
   initialApplications,
   isDemo = false,
+  detailBaseUrl = "/admin/applications",
 }: ApplicationsTableProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
+  const [regionFilter, setRegionFilter] = useState<string>("ALL");
+  const [sortField, setSortField] = useState<"date" | "number" | "institution">("date");
+  const [sortAsc, setSortAsc] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 8;
 
-  // Filter applications
-  const filtered = useMemo(() => {
-    return initialApplications.filter((app) => {
-      const matchesSearch =
-        searchQuery === "" ||
-        app.applicationNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        app.institutionName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        app.permanentInstituteId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        app.regionName.toLowerCase().includes(searchQuery.toLowerCase());
-
-      const matchesStatus =
-        statusFilter === "ALL" || app.status === statusFilter;
-
-      return matchesSearch && matchesStatus;
+  // Extract distinct regions
+  const availableRegions = useMemo(() => {
+    const set = new Set<string>();
+    initialApplications.forEach((a) => {
+      if (a.regionName) set.add(a.regionName);
     });
-  }, [initialApplications, searchQuery, statusFilter]);
+    return Array.from(set).sort();
+  }, [initialApplications]);
+
+  // Filter and Sort applications
+  const filtered = useMemo(() => {
+    return initialApplications
+      .filter((app) => {
+        const matchesSearch =
+          searchQuery === "" ||
+          app.applicationNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          app.institutionName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          app.permanentInstituteId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          app.regionName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          app.programType.toLowerCase().includes(searchQuery.toLowerCase());
+
+        const matchesStatus =
+          statusFilter === "ALL" || app.status === statusFilter;
+
+        const matchesRegion =
+          regionFilter === "ALL" || app.regionName === regionFilter;
+
+        return matchesSearch && matchesStatus && matchesRegion;
+      })
+      .sort((a, b) => {
+        if (sortField === "date") {
+          const tA = a.submittedAt ? new Date(a.submittedAt).getTime() : 0;
+          const tB = b.submittedAt ? new Date(b.submittedAt).getTime() : 0;
+          return sortAsc ? tA - tB : tB - tA;
+        } else if (sortField === "number") {
+          return sortAsc
+            ? a.applicationNumber.localeCompare(b.applicationNumber)
+            : b.applicationNumber.localeCompare(a.applicationNumber);
+        } else {
+          return sortAsc
+            ? a.institutionName.localeCompare(b.institutionName)
+            : b.institutionName.localeCompare(a.institutionName);
+        }
+      });
+  }, [initialApplications, searchQuery, statusFilter, regionFilter, sortField, sortAsc]);
 
   // Pagination
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
@@ -115,6 +149,45 @@ export function ApplicationsTable({
               <option value="rejected">Rejected</option>
             </select>
           </div>
+
+          {/* Region Filter */}
+          <div className="relative flex items-center">
+            <select
+              value={regionFilter}
+              onChange={(e) => {
+                setRegionFilter(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="px-3 py-1.5 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-slate-800 font-medium cursor-pointer"
+            >
+              <option value="ALL">All Regions</option>
+              {availableRegions.map((reg) => (
+                <option key={reg} value={reg}>
+                  {reg}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Sort Control */}
+          <div className="flex items-center gap-1">
+            <select
+              value={sortField}
+              onChange={(e) => setSortField(e.target.value as "date" | "number" | "institution")}
+              className="px-2.5 py-1.5 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-slate-800 font-medium cursor-pointer"
+            >
+              <option value="date">Sort: Date</option>
+              <option value="number">Sort: App ID</option>
+              <option value="institution">Sort: College</option>
+            </select>
+            <button
+              onClick={() => setSortAsc(!sortAsc)}
+              title={sortAsc ? "Ascending" : "Descending"}
+              className="px-2 py-1.5 text-xs border border-slate-200 rounded-lg bg-white text-slate-700 hover:bg-slate-50 font-mono"
+            >
+              {sortAsc ? "↑" : "↓"}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -175,7 +248,7 @@ export function ApplicationsTable({
                   </td>
                   <td className="py-3.5 px-4 text-right">
                     <a
-                      href={`/admin/applications?id=${app.id}`}
+                      href={`${detailBaseUrl}/${app.id}`}
                       className="inline-flex items-center gap-1 font-semibold text-teal-600 hover:text-teal-700 hover:underline"
                     >
                       <span>Review</span>

@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   OverviewIcon,
@@ -20,7 +21,9 @@ import {
 export const NAVIGATION_ITEMS = [
   { name: "Overview", href: "/admin", icon: OverviewIcon, description: "Executive KPI dashboard" },
   { name: "Applications", href: "/admin/applications", icon: ApplicationsIcon, description: "Approval & statutory requests" },
+  { name: "Compliance Centre", href: "/admin/compliance", icon: AuditIcon, description: "Deficiencies & affirmations" },
   { name: "Workflow Monitoring", href: "/admin/workflows", icon: WorkflowIcon, description: "Stage tracking & SLAs" },
+  { name: "SIH Innovation Lab", href: "/admin/simulation", icon: AnalyticsIcon, description: "Time machine & sandbox" },
   { name: "EVC Visits", href: "/admin/evc-visits", icon: EvcIcon, description: "Expert committee schedules" },
   { name: "Institutions", href: "/admin/institutions", icon: InstitutionsIcon, description: "Registered institutes directory" },
   { name: "Regions", href: "/admin/regions", icon: RegionsIcon, description: "Regional AICTE jurisdiction" },
@@ -59,15 +62,22 @@ export function AdminSidebar({ mobileOpen, onCloseMobile }: AdminSidebarProps) {
         }`}
       >
         {/* Header / Brand */}
-        <div className="flex items-center justify-between h-16 px-4 border-b border-slate-800/80 bg-slate-950/40">
+        <div className="flex items-center justify-between h-16 px-4 border-b border-slate-800/80 bg-slate-950/60">
           <Link href="/admin" className="flex items-center gap-3 overflow-hidden group">
-            <div className="w-9 h-9 shrink-0 rounded-lg bg-teal-500/10 border border-teal-500/30 flex items-center justify-center font-bold text-teal-400 group-hover:border-teal-400 transition-colors">
-              <span className="text-base tracking-wider">AI</span>
+            <div className="relative w-9 h-9 shrink-0 rounded-lg overflow-hidden bg-white/10 p-0.5 border border-white/20 shadow-xs flex items-center justify-center group-hover:border-white/40 transition-colors">
+              <Image
+                src="/saksham-logo.png"
+                alt="AICTE SAKSHAM"
+                width={36}
+                height={36}
+                className="w-full h-full object-contain"
+                priority
+              />
             </div>
             {!collapsed && (
               <div className="flex flex-col truncate">
-                <span className="text-xs font-semibold uppercase tracking-wider text-teal-400">AICTE SAKSHAM</span>
-                <span className="text-sm font-bold text-white tracking-tight">Council Admin</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-blue-300">AICTE SAKSHAM</span>
+                <span className="text-sm font-extrabold text-white tracking-tight">Council Admin</span>
               </div>
             )}
           </Link>

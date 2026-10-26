@@ -95,3 +95,92 @@ export interface QueryDeadlinePolicy {
   warning_threshold_days: number;
   auto_escalation_enabled: boolean;
 }
+
+export interface QueryDocument {
+  id: string;
+  category: string;
+  file_name: string;
+  storage_key: string;
+  mime_type: string;
+  file_size_bytes: number;
+  checksum_sha256: string;
+  is_verified: boolean;
+  verified_at: string | null;
+  created_at: string;
+}
+
+export interface QueryComplianceSubmission {
+  id: string;
+  deficiency_notice_ref: string | null;
+  compliance_remarks: string;
+  status: string;
+  review_comments: string | null;
+  reviewed_at: string | null;
+  created_at: string;
+  submitted_by_profile?: {
+    full_name?: string;
+  } | null;
+}
+
+export interface QueryWorkflowTask {
+  id: string;
+  stage_key: string;
+  task_name: string;
+  assigned_role: string | null;
+  status: string;
+  due_date: string | null;
+  completed_at: string | null;
+  remarks: string | null;
+  assigned_profile?: {
+    full_name?: string;
+  } | null;
+}
+
+export interface QueryUndertaking {
+  id: string;
+  undertaking_type: string;
+  title: string;
+  clause_text: string;
+  digital_signature_hash: string;
+  signed_at: string;
+  is_verified: boolean;
+  signer_profile?: {
+    full_name?: string;
+  } | null;
+}
+
+export interface FullApplicationDetail {
+  id: string;
+  application_number: string;
+  academic_year: string;
+  application_type: string;
+  status: string;
+  current_stage: string;
+  submission_date: string | null;
+  target_decision_date: string | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+  institution?: {
+    id: string;
+    name: string;
+    aicte_id: string | null;
+    legal_entity_type: string;
+    state: string;
+    city: string;
+    address_line1: string | null;
+  } | null;
+  region?: {
+    id: string;
+    name: string;
+    code: string;
+    regional_officer_name?: string | null;
+    office_address?: string | null;
+  } | null;
+  application_events?: QueryApplicationEvent[];
+  evc_visits?: QueryEvcVisit[];
+  compliance_submissions?: QueryComplianceSubmission[];
+  workflow_tasks?: QueryWorkflowTask[];
+  undertakings?: QueryUndertaking[];
+  documents?: QueryDocument[];
+}
