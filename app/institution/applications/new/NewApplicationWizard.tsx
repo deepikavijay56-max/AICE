@@ -43,6 +43,7 @@ interface NewApplicationWizardProps {
       status: string;
       metadata: Record<string, unknown> | null;
       institution_id: string;
+      workflow_definition_id?: string;
       workflow_definition?: { code: string } | null;
     };
     documents: Array<{

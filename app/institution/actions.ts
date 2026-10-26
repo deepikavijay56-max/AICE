@@ -845,15 +845,8 @@ export async function getApplicationDraft(draftId: string) {
     if (!draftId) return null;
 
     const supabase = await createServerClient();
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
 
-    if (authError || !user) {
-      return null;
-    }
-
+    // Query application draft directly by primary key
     const { data: app, error: appError } = await (supabase.from("applications") as unknown as {
       select: (cols: string) => {
         eq: (col: string, val: string) => {
@@ -867,44 +860,63 @@ export async function getApplicationDraft(draftId: string) {
               status: string;
               metadata: Record<string, unknown> | null;
               institution_id: string;
-              workflow_definition?: { code: string } | null;
+              workflow_definition_id?: string;
             } | null;
-            error: unknown;
+            error: { message: string } | null;
           }>;
         };
       };
     })
-      .select("id, application_number, academic_year, application_type, current_stage, status, metadata, institution_id, workflow_definition:workflow_definitions(code)")
+      .select("id, application_number, academic_year, application_type, current_stage, status, metadata, institution_id, workflow_definition_id")
       .eq("id", draftId)
       .single();
 
-    if (appError || !app || app.status !== "draft") {
+    if (appError || !app) {
+      console.warn("getApplicationDraft: application query returned error or empty:", appError);
       return null;
     }
 
-    // Fetch existing documents
-    const { data: docs } = await (supabase.from("documents") as unknown as {
-      select: (cols: string) => {
-        eq: (col: string, val: string) => Promise<{
-          data: Array<{
-            id: string;
-            category: string;
-            file_name: string;
-            file_size_bytes: number;
-            checksum_sha256: string;
-            storage_key: string;
-          }> | null;
-        }>;
-      };
-    })
-      .select("id, category, file_name, file_size_bytes, checksum_sha256, storage_key")
-      .eq("application_id", draftId);
+    // Fetch existing documents for this draft
+    let docs: Array<{
+      id: string;
+      category: string;
+      file_name: string;
+      file_size_bytes: number;
+      checksum_sha256: string;
+      storage_key: string;
+    }> = [];
+
+    try {
+      const { data: dbDocs } = await (supabase.from("documents") as unknown as {
+        select: (cols: string) => {
+          eq: (col: string, val: string) => Promise<{
+            data: Array<{
+              id: string;
+              category: string;
+              file_name: string;
+              file_size_bytes: number;
+              checksum_sha256: string;
+              storage_key: string;
+            }> | null;
+          }>;
+        };
+      })
+        .select("id, category, file_name, file_size_bytes, checksum_sha256, storage_key")
+        .eq("application_id", draftId);
+
+      if (dbDocs) {
+        docs = dbDocs;
+      }
+    } catch (docErr) {
+      console.warn("getApplicationDraft: documents query error:", docErr);
+    }
 
     return {
       application: app,
-      documents: docs || [],
+      documents: docs,
     };
-  } catch {
+  } catch (err) {
+    console.error("getApplicationDraft error:", err);
     return null;
   }
 }
