@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import {
   MenuIcon,
   BellIcon,
@@ -91,6 +92,153 @@ export function AdminHeader({
     }
   };
 
+  // Compute role-tailored links
+  const roleAuditTrailHref: Record<string, string> = {
+    institution_admin: "/institution",
+    institution_user: "/institution",
+    scrutiny_officer: "/scrutiny/compliance",
+    regional_officer: "/regional/compliance",
+    evc_expert: "/expert/reports",
+    system_auditor: "/admin/audit-logs",
+    council_admin: "/admin/audit-logs",
+  };
+
+  const auditTrailHref = roleAuditTrailHref[userRole || "council_admin"] || "/admin/audit-logs";
+
+  // Role-appropriate notifications based on actual user context and workspace
+  interface NotificationItem {
+    id: string;
+    title: string;
+    description: string;
+    timeAgo: string;
+    targetHref: string;
+    type: "alert" | "success" | "info";
+  }
+
+  const getRoleNotifications = (role: string): NotificationItem[] => {
+    switch (role) {
+      case "institution_admin":
+      case "institution_user":
+        return [
+          {
+            id: "notif-inst-1",
+            title: "Statutory Deficiency Clarification Notice",
+            description: "Scrutiny Committee logged inquiries on Land Title & Faculty Roster. Rectifications due.",
+            timeAgo: "25 minutes ago",
+            targetHref: "/institution/deficiencies",
+            type: "alert",
+          },
+          {
+            id: "notif-inst-2",
+            title: "Annual EoA Application Docket Stored",
+            description: "AICTE-2026-ENGG-00124 draft dossier is active. All uploaded proofs cryptographically sealed.",
+            timeAgo: "2 hours ago",
+            targetHref: "/institution",
+            type: "info",
+          },
+          {
+            id: "notif-inst-3",
+            title: "Digital Legal Undertakings Acknowledged",
+            description: "Anti-Ragging and BoG affirmation hash records logged under institutional registry.",
+            timeAgo: "1 day ago",
+            targetHref: "/institution/undertakings",
+            type: "success",
+          },
+        ];
+      case "scrutiny_officer":
+        return [
+          {
+            id: "notif-sc-1",
+            title: "New Application Allocated to Worklist",
+            description: "AICTE-2026-ENGG-00124 ready for statutory checklist & cadre-ratio inspection.",
+            timeAgo: "15 minutes ago",
+            targetHref: "/scrutiny",
+            type: "alert",
+          },
+          {
+            id: "notif-sc-2",
+            title: "Deficiency Evidence Upload Received",
+            description: "Technical institute updated sanctioned building blueprint and Fire Safety NOC.",
+            timeAgo: "1 hour ago",
+            targetHref: "/scrutiny/compliance",
+            type: "success",
+          },
+        ];
+      case "regional_officer":
+        return [
+          {
+            id: "notif-ro-1",
+            title: "Jurisdictional SLA Escalation Alert",
+            description: "Western Region: 2 technical institutes nearing 15-day regulatory decision deadline.",
+            timeAgo: "10 minutes ago",
+            targetHref: "/regional/applications",
+            type: "alert",
+          },
+          {
+            id: "notif-ro-2",
+            title: "Regional EVC Inspection Committee Convened",
+            description: "3 expert members empanelled for surprise physical campus infrastructure inspection.",
+            timeAgo: "3 hours ago",
+            targetHref: "/regional/evc",
+            type: "info",
+          },
+        ];
+      case "evc_expert":
+        return [
+          {
+            id: "notif-evc-1",
+            title: "EVC Inspection Assignment Scheduled",
+            description: "You have been nominated to inspect infrastructure and faculty cadre for assigned institute.",
+            timeAgo: "30 minutes ago",
+            targetHref: "/expert",
+            type: "alert",
+          },
+          {
+            id: "notif-evc-2",
+            title: "Peer-Review Report Submission Reminder",
+            description: "Inspection dossier findings and geotagged evidence abstract due within 48 hours.",
+            timeAgo: "2 hours ago",
+            targetHref: "/expert/reports",
+            type: "info",
+          },
+        ];
+      case "system_auditor":
+        return [
+          {
+            id: "notif-aud-1",
+            title: "Cryptographic Audit Ledger Event",
+            description: "Trigger trg_applications_enforce_integrity sealed 4 immutable workflow transitions.",
+            timeAgo: "8 minutes ago",
+            targetHref: "/admin/audit-logs",
+            type: "info",
+          },
+        ];
+      case "council_admin":
+      default:
+        return [
+          {
+            id: "notif-ca-1",
+            title: "SLA Escalation: EVC Visit Delayed",
+            description: "Western Region • Institute #1-98721 exceeds 14 days post-scrutiny.",
+            timeAgo: "12 minutes ago",
+            targetHref: "/admin/applications",
+            type: "alert",
+          },
+          {
+            id: "notif-ca-2",
+            title: "Council Decision Pending Final Order",
+            description: "SAC cleared 3 engineering extension requests ready for final order.",
+            timeAgo: "1 hour ago",
+            targetHref: "/admin/compliance",
+            type: "success",
+          },
+        ];
+    }
+  };
+
+  const notifications = getRoleNotifications(userRole || "council_admin");
+  const [allRead, setAllRead] = useState(false);
+
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 sm:px-6 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-2xs">
       {/* Left: Mobile Menu + Dynamic Role Title */}
@@ -147,7 +295,9 @@ export function AdminHeader({
             aria-expanded={notificationsOpen}
           >
             <BellIcon className="w-5 h-5" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-teal-600 ring-2 ring-white" />
+            {!allRead && (
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-teal-600 ring-2 ring-white" />
+            )}
           </button>
 
           {/* Notifications Dropdown */}
@@ -157,50 +307,51 @@ export function AdminHeader({
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                   Regulatory Alerts
                 </span>
-                <span className="text-[11px] font-medium text-teal-600 hover:underline cursor-pointer">
+                <button
+                  type="button"
+                  onClick={() => setAllRead(true)}
+                  className="text-[11px] font-medium text-teal-600 hover:underline cursor-pointer"
+                >
                   Mark all read
-                </span>
+                </button>
               </div>
 
               <div className="max-h-72 overflow-y-auto divide-y divide-slate-100 text-xs">
-                <div className="p-3 hover:bg-slate-50 transition-colors flex gap-3">
-                  <AlertCircleIcon className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-semibold text-slate-800">
-                      SLA Escalation: EVC Visit Delayed
-                    </p>
-                    <p className="text-slate-500 text-[11px] mt-0.5">
-                      Western Region • Institute #1-98721 exceeds 14 days post-scrutiny.
-                    </p>
-                    <span className="text-[10px] text-slate-400 mt-1 inline-block">
-                      12 minutes ago
-                    </span>
-                  </div>
-                </div>
-
-                <div className="p-3 hover:bg-slate-50 transition-colors flex gap-3">
-                  <CheckCircleIcon className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-semibold text-slate-800">
-                      Council Decision Pending Approval
-                    </p>
-                    <p className="text-slate-500 text-[11px] mt-0.5">
-                      SAC cleared 3 engineering extension requests ready for final order.
-                    </p>
-                    <span className="text-[10px] text-slate-400 mt-1 inline-block">
-                      1 hour ago
-                    </span>
-                  </div>
-                </div>
+                {notifications.map((item) => (
+                  <Link
+                    key={item.id}
+                    href={item.targetHref}
+                    onClick={() => setNotificationsOpen(false)}
+                    className="p-3 hover:bg-slate-50 transition-colors flex gap-3 text-left block"
+                  >
+                    {item.type === "alert" ? (
+                      <AlertCircleIcon className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                    ) : (
+                      <CheckCircleIcon className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                    )}
+                    <div>
+                      <p className="font-semibold text-slate-800 leading-snug">
+                        {item.title}
+                      </p>
+                      <p className="text-slate-500 text-[11px] mt-0.5 leading-relaxed">
+                        {item.description}
+                      </p>
+                      <span className="text-[10px] text-teal-700 font-medium mt-1 inline-block">
+                        {item.timeAgo} &bull; Open in workspace &rarr;
+                      </span>
+                    </div>
+                  </Link>
+                ))}
               </div>
 
               <div className="px-4 py-2 border-t border-slate-100 text-center bg-slate-50/50">
-                <a
-                  href="/admin/audit-logs"
+                <Link
+                  href={auditTrailHref}
+                  onClick={() => setNotificationsOpen(false)}
                   className="text-xs font-medium text-slate-700 hover:text-teal-600"
                 >
-                  View complete audit trail &rarr;
-                </a>
+                  View complete workspace records &rarr;
+                </Link>
               </div>
             </div>
           )}
@@ -243,18 +394,13 @@ export function AdminHeader({
               </div>
 
               <div className="py-1">
-                <a
-                  href="/admin/settings"
+                <Link
+                  href={auditTrailHref}
+                  onClick={() => setProfileOpen(false)}
                   className="block px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900"
                 >
-                  Account & Security Settings
-                </a>
-                <a
-                  href="/admin/audit-logs"
-                  className="block px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900"
-                >
-                  My Activity Logs
-                </a>
+                  My Workspace Activity
+                </Link>
               </div>
 
               <div className="border-t border-slate-100 pt-1">
@@ -264,7 +410,7 @@ export function AdminHeader({
                   className="w-full flex items-center gap-2 px-4 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50 transition-colors"
                 >
                   <LogoutIcon className="w-4 h-4" />
-                  <span>{signingOut ? "Signing Out..." : "Sign Out of Council Portal"}</span>
+                  <span>{signingOut ? "Signing Out..." : "Sign Out of Portal"}</span>
                 </button>
               </div>
             </div>
