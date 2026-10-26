@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Link from "next/link";
 import { SearchIcon, FilterIcon, ArrowRightIcon } from "./Icons";
 import { StatusBadge } from "./StatusBadge";
 import type { ApplicationStatus } from "@/types/database";
@@ -255,13 +256,13 @@ export function ApplicationsTable({
                       : "Pending SLA"}
                   </td>
                   <td className="py-3.5 px-4 text-right">
-                    <a
+                    <Link
                       href={`${detailBaseUrl}/${app.id}`}
                       className="inline-flex items-center gap-1 font-semibold text-teal-600 hover:text-teal-700 hover:underline"
                     >
                       <span>Review</span>
                       <ArrowRightIcon className="w-3.5 h-3.5" />
-                    </a>
+                    </Link>
                   </td>
                 </tr>
               ))
