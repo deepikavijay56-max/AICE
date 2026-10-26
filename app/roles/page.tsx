@@ -115,24 +115,23 @@ async function RolesDirectoryContent() {
   const currentUser = await getCurrentUserContext();
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col justify-between p-6 sm:p-12">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between p-6 sm:p-12 font-sans">
       <div className="max-w-6xl mx-auto w-full space-y-8">
         {/* Header */}
-        <div className="border-b border-slate-800 pb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="border-b border-slate-200 pb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-200">
                 AICTE SAKSHAM RBAC Matrix
               </span>
-              <span className="text-xs text-slate-400 font-mono">ISO 27001 Aligned</span>
+              <span className="text-xs text-slate-500 font-mono">APH 2026–27 Statutory Standard</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-2 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2 tracking-tight">
               Supported Roles &amp; Authorization Boundaries
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-2xl leading-relaxed">
               Every persona in AICTE SAKSHAM operates strictly within its verified database role, regional
-              jurisdiction, and multi-tenant Row Level Security (RLS) boundary. Selecting a card
-              provides regulatory scope details.
+              jurisdiction, and multi-tenant Row Level Security (RLS) boundary.
             </p>
           </div>
 
@@ -140,20 +139,26 @@ async function RolesDirectoryContent() {
             {currentUser?.isAuthenticated ? (
               <Link
                 href={ROLE_HOME_ROUTES[currentUser.role] || "/admin"}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs transition-colors shadow-xs"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-700 hover:bg-blue-800 text-white font-semibold text-xs transition-colors shadow-xs"
               >
-                <span>Enter My Workspace ({currentUser.role})</span>
+                <span>Enter Workspace ({currentUser.role.replace(/_/g, " ")})</span>
                 <ArrowRightIcon className="w-3.5 h-3.5" />
               </Link>
             ) : (
               <Link
                 href="/login"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs transition-colors shadow-xs"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-700 hover:bg-blue-800 text-white font-semibold text-xs transition-colors shadow-xs"
               >
-                <span>Sign In with Credentials</span>
+                <span>Sign In to Portal</span>
                 <ArrowRightIcon className="w-3.5 h-3.5" />
               </Link>
             )}
+            <Link
+              href="/admin"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold text-xs transition-colors shadow-xs"
+            >
+              <span>Back to Dashboard</span>
+            </Link>
           </div>
         </div>
 
@@ -164,21 +169,21 @@ async function RolesDirectoryContent() {
             return (
               <div
                 key={r.role}
-                className={`rounded-2xl border p-6 flex flex-col justify-between transition-all ${
+                className={`rounded-xl border p-6 flex flex-col justify-between transition-all bg-white shadow-xs ${
                   isUserRole
-                    ? "bg-slate-800/90 border-teal-500 ring-2 ring-teal-500/20"
-                    : "bg-slate-800/40 border-slate-700/80 hover:border-slate-600"
+                    ? "border-blue-600 ring-2 ring-blue-600/20"
+                    : "border-slate-200 hover:border-slate-300"
                 }`}
               >
                 <div className="space-y-4">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-bold text-sm text-white tracking-tight">{r.title}</span>
+                    <span className="font-bold text-sm text-slate-900 tracking-tight">{r.title}</span>
                     <span className={`text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded border ${r.badgeClass}`}>
                       {r.scopeBadge}
                     </span>
                   </div>
 
-                  <p className="text-xs text-slate-400 leading-relaxed">
+                  <p className="text-xs text-slate-600 leading-relaxed">
                     {r.description}
                   </p>
 
@@ -197,13 +202,13 @@ async function RolesDirectoryContent() {
                   </div>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-slate-700/60 flex items-center justify-between">
-                  <div className="text-[11px] font-mono text-slate-400">
-                    Route: <span className="text-teal-400">{r.route}</span>
+                <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+                  <div className="text-[11px] font-mono text-slate-500">
+                    Route: <span className="text-blue-700 font-semibold">{r.route}</span>
                   </div>
                   <Link
                     href="/login"
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-teal-400 hover:text-teal-300 transition-colors"
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-blue-700 hover:text-blue-800 transition-colors"
                   >
                     <span>Authenticate</span>
                     <ArrowRightIcon className="w-3 h-3" />
@@ -215,19 +220,19 @@ async function RolesDirectoryContent() {
         </div>
 
         {/* Security Note */}
-        <div className="p-4 rounded-xl bg-slate-800/60 border border-slate-700 text-xs text-slate-400 flex items-start gap-3">
-          <ShieldCheckIcon className="w-5 h-5 text-teal-400 shrink-0 mt-0.5" />
+        <div className="p-4 rounded-xl bg-white border border-slate-200 text-xs text-slate-600 flex items-start gap-3 shadow-xs">
+          <ShieldCheckIcon className="w-5 h-5 text-blue-700 shrink-0 mt-0.5" />
           <div>
-            <h4 className="font-bold text-slate-200">Server-Side Profile &amp; Role Enforcement</h4>
-            <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
-              In accordance with AICTE data security standards, role assignment is resolved strictly from the authenticated session profile in PostgreSQL <code className="text-teal-300">public.profiles</code>. Direct URL modifications or client-side role toggling are strictly rejected by the server.
+            <h4 className="font-bold text-slate-900">Server-Side Profile &amp; Role Enforcement</h4>
+            <p className="text-[11px] text-slate-600 mt-0.5 leading-relaxed">
+              In accordance with AICTE data security standards, role assignment is resolved strictly from the authenticated session profile in PostgreSQL <code className="text-blue-700 font-semibold">public.profiles</code>. Direct URL modifications or client-side role toggling are strictly rejected by the server.
             </p>
           </div>
         </div>
       </div>
 
       {/* Footer */}
-      <footer className="max-w-6xl mx-auto w-full pt-8 mt-8 border-t border-slate-800 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <footer className="max-w-6xl mx-auto w-full pt-8 mt-8 border-t border-slate-200 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2">
         <span>AICTE SAKSHAM &mdash; Smart Approval, Compliance, Scheduling &amp; Handling Automation</span>
         <span>SIH 2026 Problem Statement 26262</span>
       </footer>

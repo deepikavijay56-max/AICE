@@ -73,6 +73,7 @@ export function getNavigationForRole(role: UserRole | string): NavItem[] {
         { name: "Applications", href: "/admin/applications", icon: ApplicationsIcon, description: "Approval & statutory requests" },
         { name: "Compliance Centre", href: "/admin/compliance", icon: AuditIcon, description: "Deficiencies & affirmations" },
         { name: "Workflow Monitoring", href: "/admin/workflows", icon: WorkflowIcon, description: "Stage tracking & SLAs" },
+        { name: "Role Matrix", href: "/roles", icon: UsersIcon, description: "Statutory RBAC & scopes" },
         { name: "SIH Innovation Lab", href: "/admin/simulation", icon: AnalyticsIcon, description: "Time machine & sandbox" },
         { name: "EVC Visits", href: "/admin/evc-visits", icon: EvcIcon, description: "Expert committee schedules" },
         { name: "Institutions", href: "/admin/institutions", icon: InstitutionsIcon, description: "Registered institutes directory" },

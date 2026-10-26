@@ -137,6 +137,84 @@ export function ApplicationDetailView({
             </div>
           </div>
         </div>
+
+        {/* Real Application Lifecycle Stepper */}
+        {(() => {
+          const STAGES = [
+            { key: "submitted", label: "Submission", role: "Applicant Institute" },
+            { key: "under_scrutiny", label: "Scrutiny Verification", role: "Scrutiny Officer" },
+            { key: "evc_scheduled", label: "EVC Inspection", role: "EVC Expert Committee" },
+            { key: "evc_completed", label: "Report Appraisal", role: "Regional Officer" },
+            { key: "council_decision_pending", label: "Council Determination", role: "Executive Council" },
+            { key: "approved", label: "Sanction Issued", role: "Council Bureau" },
+          ];
+
+          const stageIndexMap: Record<string, number> = {
+            submitted: 0,
+            under_scrutiny: 1,
+            evc_scheduled: 2,
+            evc_completed: 3,
+            sac_review: 3,
+            council_decision_pending: 4,
+            approved: 5,
+            rejected: 5,
+          };
+
+          const currentIdx = stageIndexMap[application.status] ?? stageIndexMap[application.current_stage] ?? 1;
+
+          return (
+            <div className="mt-6 pt-5 border-t border-slate-100">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs font-bold text-slate-900 tracking-tight">
+                  Statutory Approval Lifecycle
+                </span>
+                <span className="text-[11px] text-slate-500">
+                  Active Stage: <strong className="text-blue-700 capitalize">{application.status.replace(/_/g, " ")}</strong>
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+                {STAGES.map((s, idx) => {
+                  const isCompleted = idx < currentIdx;
+                  const isCurrent = idx === currentIdx;
+
+                  return (
+                    <div
+                      key={s.key}
+                      className={`p-2.5 rounded-lg border text-left transition-all ${
+                        isCurrent
+                          ? "bg-blue-50/80 border-blue-500 ring-1 ring-blue-500/20"
+                          : isCompleted
+                          ? "bg-emerald-50/60 border-emerald-200"
+                          : "bg-slate-50/60 border-slate-200 text-slate-400"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-mono font-bold text-slate-500">
+                          0{idx + 1}
+                        </span>
+                        {isCompleted && (
+                          <span className="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px]">
+                            ✓
+                          </span>
+                        )}
+                        {isCurrent && (
+                          <span className="w-2 h-2 rounded-full bg-blue-600 animate-ping" />
+                        )}
+                      </div>
+                      <div className={`text-xs font-bold mt-1.5 leading-tight ${isCurrent ? "text-blue-900" : isCompleted ? "text-emerald-950" : "text-slate-500"}`}>
+                        {s.label}
+                      </div>
+                      <div className="text-[10px] text-slate-500 mt-1 truncate">
+                        {s.role}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
       </div>
 
       {/* Workflow Transition Action Gate */}
